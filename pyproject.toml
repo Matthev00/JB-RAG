@@ -1,0 +1,7 @@
+[project]
+name = "jb-rag"
+version = "0.1.0"
+description = "Retrieval-Augmented Generation (RAG) system over a code repository for a question-answering task."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
