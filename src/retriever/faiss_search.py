@@ -36,22 +36,30 @@ class FAISSRetriever:
         with metadata_path.open("r", encoding="utf-8") as f:
             self.metadata = json.load(f)
 
-    def search(self, query: str, k: int = 5) -> list[dict]:
+    def search(self, query: str, radius: float = 0.8) -> list[dict]:
         """
-        Searches the FAISS index for the most similar code chunks.
+        Searches the FAISS index for all code chunks within a given similarity radius.
 
         Args:
             query (str): Query string.
-            k (int): Number of similar code chunks to retrieve.
+            radius (float): Radius for similarity search (cosine similarity threshold).
 
         Returns:
             list: List of similar code chunks with metadata.
         """
         query_embedding = self.model.encode([query], convert_to_numpy=True)
-        _, indices = self.index.search(query_embedding, k)
+        lims, distances, indices = self.index.range_search(query_embedding, radius)
 
-        return [self.metadata[i] for i in indices[0]]
+        files = set()
+        results = []
+        for i in range(len(lims) - 1):
+            for idx, dist in zip(indices[lims[i]:lims[i + 1]], distances[lims[i]:lims[i + 1]]):
+                if self.metadata[idx]["file_type"] == "code" and self.metadata[idx]["relative_path"] not in files:
+                    results.append(self.metadata[idx])
+                    files.add(self.metadata[idx]["relative_path"])
 
+        return results
+    
     def build_index(self, project_name: str) -> None:
         """
         Builds the FAISS index for the project.
@@ -78,9 +86,9 @@ class FAISSRetriever:
 
 if __name__ == "__main__":
     retriever = FAISSRetriever(EMBEDDING_MODEL)
-    retriever.build_index("escrcpy")
+    # retriever.build_index("escrcpy")
     retriever.load_index("escrcpy")
-    results = retriever.search("How does the SelectDisplay component handle the device options when retrieving display IDs?", 1)
+    results = retriever.search("How does the edge hiding and snapping mechanism work for a window instance?", 0.37)
     for result in results:
         print(result["path"])
         print()
