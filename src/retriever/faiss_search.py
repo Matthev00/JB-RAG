@@ -61,10 +61,12 @@ class FAISSRetriever:
                     self.metadata[idx]["file_type"] == "code"
                     and self.metadata[idx]["relative_path"] not in files
                 ):
-                    results.append(self.metadata[idx])
+                    results.append((self.metadata[idx], dist))
                     files.add(self.metadata[idx]["relative_path"])
+        
+        results.sort(key=lambda x: x[1])
 
-        return results
+        return [metadata for metadata, _ in results]
 
     def build_index(self, project_name: str) -> None:
         """
