@@ -46,9 +46,14 @@ format:
 ## Set up python interpreter environment
 .PHONY: create_environment
 create_environment:
-	$(PYTHON_INTERPRETER) -m venv .venv
-	@echo "Run 'source .venv/bin/activate' to activate the environment"
+	$(PYTHON_INTERPRETER) -m pip install uv
+	uv venv
 
+
+## Prepare Knowledge Base
+.PHONY: prepare_kb
+prepare_kb:
+	$(PYTHON_INTERPRETER) src/knowledge_base_preparation.py
 
 #################################################################################
 # PROJECT RULES                                                                 #

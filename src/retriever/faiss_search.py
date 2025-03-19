@@ -17,8 +17,8 @@ class FAISSRetriever:
             embedding_model (str): Name of the SentenceTransformer model.
         """
         self.model = SentenceTransformer(embedding_model)
-        self.index = None
-        self.metadata = []
+        self.index: faiss = None
+        self.metadata: list[dict] = []
 
     def load_index(self, project_name: str) -> None:
         """

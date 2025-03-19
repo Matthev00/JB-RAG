@@ -21,7 +21,7 @@ def main():
     repo_loader = RepoLoader(REPO_URL)
     repo = repo_loader.clone()
 
-    code_parser = CodeParser(repo.working_dir)
+    code_parser = CodeParser(Path(repo.working_dir))
     code_chunks = code_parser.parse(MAX_CHUNK_SIZE)
 
     project_name = repo.working_dir.split("/")[-1]
