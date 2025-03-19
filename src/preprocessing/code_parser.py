@@ -137,7 +137,6 @@ class CodeParser:
             ".yaml": "YAML",
             ".json": "JSON",
             ".xml": "XML",
-            
         }.get(file_path.suffix, "Unknown")
 
     def split_file(

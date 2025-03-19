@@ -6,9 +6,9 @@ from src.preprocessing.code_parser import CodeParser
 
 
 class EmbeddingGenerator:
-    """ Creates embeddings for code chunks using SentenceTransformer """
+    """Creates embeddings for code chunks using SentenceTransformer"""
 
-    def __init__(self, model_name:str = "all-MiniLM-L6-v2") -> None:
+    def __init__(self, model_name: str = "all-MiniLM-L6-v2") -> None:
         """
         Initializes the SentenceTransformer model.
 
@@ -22,7 +22,7 @@ class EmbeddingGenerator:
 
         Args:
             code_chunks (list): List of code chunks with metadata.
-        
+
         Returns:
             list: List of code chunks with added embeddings.
         """
@@ -38,24 +38,28 @@ class EmbeddingGenerator:
         """
         Saves embeddings and metadata to disk.
         Embeddings are saved as a NumPy array, metadata is saved as JSON.
-        
+
         Args:
             code_chunks (list): List of code chunks with metadata and embeddings.
             save_path (Path): Path to save the embeddings and metadata.
         """
 
-        save_path.parent.mkdir(parents=True, exist_ok=True)
+        save_path.mkdir(parents=True, exist_ok=True)
 
-        np.save(save_path.with_suffix(".npy"), np.array([c["embedding"] for c in code_chunks]))
+        metadata_path = (save_path / "metadata").with_suffix(".json")
+        embeddings_path = (save_path / "embeddings").with_suffix(".npy")
+        np.save(embeddings_path, np.array([c["embedding"] for c in code_chunks]))
 
-        metadata = [{k: v for k, v in c.items() if k != "embedding"} for c in code_chunks]
-        with save_path.with_suffix(".json").open("w", encoding="utf-8") as f:
+        metadata = [
+            {k: v for k, v in c.items() if k != "embedding"} for c in code_chunks
+        ]
+        with metadata_path.open("w", encoding="utf-8") as f:
             json.dump(metadata, f, indent=2, ensure_ascii=False)
 
     def load_embeddings(self, save_path: Path) -> list[dict]:
         """
         Loads embeddings and metadata from disk.
-        
+
         Args:
             save_path (Path): Path to the embeddings and metadata.
 
