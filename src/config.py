@@ -21,3 +21,6 @@ LANGUAGE_PATTERNS = {
     "HTML": r"<script>|<style>|<div>|<span>|<p>|<a>|<ul>|<ol>|<li>|<table>|<tr>|<td>|<th>|<header>|<footer>|<section>|<article>|<nav>|<form>|<input>|<button>|<textarea>|<select>|<option>|<h[1-6]>",
     "Unknown": r".*",
 }
+
+
+EMBEDDING_MODEL = "all-MiniLM-L6-v2"

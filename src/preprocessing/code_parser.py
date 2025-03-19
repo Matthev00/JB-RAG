@@ -1,6 +1,5 @@
 import re
 from pathlib import Path
-from typing import Optional
 
 from src.config import (
     CONFIG_EXTENSIONS,
@@ -8,6 +7,7 @@ from src.config import (
     DOC_EXTENSIONS,
     LANGUAGE_PATTERNS,
 )
+from pprint import pprint
 
 
 class CodeParser:
@@ -21,21 +21,21 @@ class CodeParser:
         """
         self._repo_path = repo_path
         self.ignored_patterns = (
-            self._load_gitignore_patterns(repo_path) + DEFAULT_IGNORED_EXTENSIONS
+            self._load_gitignore_patterns() | DEFAULT_IGNORED_EXTENSIONS
         )
 
-    def _load_gitignore_patterns(repo_path: Path) -> Optional[set]:
+    def _load_gitignore_patterns(self) -> set:
         """
         Load the patterns from the .gitignore file in the repository.
 
         Args:
             repo_path (Path): Path to the repository.
         Returns:
-            set: Set of patterns to be ignored if present, else None.
+            set: Set of patterns to be ignored if present, else empty set.
         """
-        gitignore_path = repo_path / ".gitignore"
+        gitignore_path = self._repo_path / ".gitignore"
         if not gitignore_path.exists():
-            return None
+            return set()
 
         with open(gitignore_path, "r") as f:
             lines = f.readlines()
@@ -70,6 +70,10 @@ class CodeParser:
             return False
 
         try:
+            with file_path.open("rb") as f:
+                chunk = f.read(1024)
+                if b"\0" in chunk:
+                    return False
             with file_path.open("r", encoding="utf-8", errors="ignore") as f:
                 return bool(f.readline())
         except Exception:
@@ -121,6 +125,19 @@ class CodeParser:
             ".cpp": "C++",
             ".java": "Java",
             ".html": "HTML",
+            ".css": "CSS",
+            ".sh": "Shell",
+            ".sql": "SQL",
+            ".r": "R",
+            ".rb": "Ruby",
+            ".php": "PHP",
+            ".cs": "C#",
+            ".go": "Go",
+            ".md": "Markdown",
+            ".yaml": "YAML",
+            ".json": "JSON",
+            ".xml": "XML",
+            
         }.get(file_path.suffix, "Unknown")
 
     def split_file(
@@ -185,15 +202,15 @@ class CodeParser:
         file_paths = self.get_relevant_files()
         i = 0
         for file in file_paths:
-            file_type = self._clasify_file(file)
+            file_type = self._classify_file(file)
             file_language = self._detect_language(file)
             chunks = self.split_file(file, max_chunk_size, file_language)
 
             for chunk in chunks:
                 all_chunks.append(
                     {
-                        "path": file,
-                        "relative_path": file.relative_to(self._repo_path),
+                        "path": str(file),
+                        "relative_path": str(file.relative_to(self._repo_path)),
                         "file_type": file_type,
                         "language": file_language,
                         "chunk_id": i,
@@ -204,3 +221,10 @@ class CodeParser:
                 )
                 i += 1
         return all_chunks
+
+
+if __name__ == "__main__":
+    repo_path = Path("data/repos/escrcpy")
+    code_parser = CodeParser(repo_path)
+    chunks = code_parser.parse(30)
+    pprint(len(chunks))
