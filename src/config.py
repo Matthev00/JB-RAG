@@ -1,4 +1,7 @@
 REPO_DIR = "data/repos"
+EMBEDDINGS_DIR = "data/embeddings"
+FAISS_INDEX_DIR = "data/faiss"
+MAX_CHUNK_SIZE = 30
 
 DEFAULT_IGNORED_EXTENSIONS = {
     ".jpeg",
