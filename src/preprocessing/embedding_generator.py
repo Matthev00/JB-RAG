@@ -1,7 +1,9 @@
-import numpy as np
 import json
 from pathlib import Path
+
+import numpy as np
 from sentence_transformers import SentenceTransformer
+
 from src.preprocessing.code_parser import CodeParser
 
 
@@ -78,18 +80,3 @@ class EmbeddingGenerator:
             chunk["embedding"] = embeddings[i]
 
         return metadata
-
-
-if __name__ == "__main__":
-    save_path = Path("data/embeddings") / "escrcpy"
-
-    repo_path = Path("data/repos/escrcpy")
-    code_parser = CodeParser(repo_path)
-    code_chunks = code_parser.parse(30)
-
-    embedding_generator = EmbeddingGenerator()
-    code_chunks = embedding_generator.create_embeddings(code_chunks)
-    embedding_generator.save_embeddings(code_chunks, save_path)
-
-    loaded_chunks = embedding_generator.load_embeddings(save_path)
-    print(loaded_chunks[:15])

@@ -17,14 +17,3 @@ class RepoLoader:
             return Repo(self.repo_dir)
         else:
             return Repo.clone_from(self.repo_url, self.repo_dir)
-
-
-def main():
-    repo_url = "https://github.com/viarotel-org/escrcpy.git"
-    repo_loader = RepoLoader(repo_url)
-    repo = repo_loader.clone()
-    print(repo)
-
-
-if __name__ == "__main__":
-    main()

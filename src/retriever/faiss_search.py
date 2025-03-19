@@ -1,10 +1,11 @@
+import json
+from pathlib import Path
+
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
-from pathlib import Path
-import json
 
-from src.config import FAISS_INDEX_DIR, EMBEDDINGS_DIR, EMBEDDING_MODEL
+from src.config import EMBEDDING_MODEL, EMBEDDINGS_DIR, FAISS_INDEX_DIR
 
 
 class FAISSRetriever:
@@ -53,13 +54,18 @@ class FAISSRetriever:
         files = set()
         results = []
         for i in range(len(lims) - 1):
-            for idx, dist in zip(indices[lims[i]:lims[i + 1]], distances[lims[i]:lims[i + 1]]):
-                if self.metadata[idx]["file_type"] == "code" and self.metadata[idx]["relative_path"] not in files:
+            for idx, dist in zip(
+                indices[lims[i]: lims[i + 1]], distances[lims[i]: lims[i + 1]]
+            ):
+                if (
+                    self.metadata[idx]["file_type"] == "code"
+                    and self.metadata[idx]["relative_path"] not in files
+                ):
                     results.append(self.metadata[idx])
                     files.add(self.metadata[idx]["relative_path"])
 
         return results
-    
+
     def build_index(self, project_name: str) -> None:
         """
         Builds the FAISS index for the project.
@@ -82,14 +88,3 @@ class FAISSRetriever:
 
         index_path = (Path(FAISS_INDEX_DIR) / project_name).with_suffix(".faiss")
         faiss.write_index(self.index, str(index_path))
-
-
-if __name__ == "__main__":
-    retriever = FAISSRetriever(EMBEDDING_MODEL)
-    # retriever.build_index("escrcpy")
-    retriever.load_index("escrcpy")
-    results = retriever.search("How does the edge hiding and snapping mechanism work for a window instance?", 0.37)
-    for result in results:
-        print(result["path"])
-        print()
-        print("-" * 80)

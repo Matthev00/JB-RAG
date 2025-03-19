@@ -3,6 +3,8 @@ EMBEDDINGS_DIR = "data/embeddings"
 FAISS_INDEX_DIR = "data/faiss"
 MAX_CHUNK_SIZE = 30
 
+REPO_URL = "https://github.com/viarotel-org/escrcpy.git"
+
 DEFAULT_IGNORED_EXTENSIONS = {
     ".jpeg",
     ".jpg",
@@ -12,6 +14,26 @@ DEFAULT_IGNORED_EXTENSIONS = {
 }
 DOC_EXTENSIONS = {".md", ".pdf"}
 CONFIG_EXTENSIONS = {".json", ".yml", ".yaml", ".env", ".toml", ".ini", ".xml"}
+CODE_EXTENSIONS = {
+    ".py",
+    ".js",
+    ".ts",
+    ".vue",
+    ".cpp",
+    ".java",
+    ".html",
+    ".css",
+    ".sh",
+    ".sql",
+    ".r",
+    ".rb",
+    ".php",
+    ".cs",
+    ".go",
+    ".yaml",
+    ".json",
+    ".xml",
+}
 
 
 LANGUAGE_PATTERNS = {

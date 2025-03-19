@@ -2,12 +2,12 @@ import re
 from pathlib import Path
 
 from src.config import (
+    CODE_EXTENSIONS,
     CONFIG_EXTENSIONS,
     DEFAULT_IGNORED_EXTENSIONS,
     DOC_EXTENSIONS,
     LANGUAGE_PATTERNS,
 )
-from pprint import pprint
 
 
 class CodeParser:
@@ -105,7 +105,9 @@ class CodeParser:
             return "config"
         if ext in DOC_EXTENSIONS:
             return "documentation"
-        return "code"
+        if ext in CODE_EXTENSIONS:
+            return "code"
+        return "other"
 
     def _detect_language(self, file_path: Path) -> str:
         """
@@ -220,10 +222,3 @@ class CodeParser:
                 )
                 i += 1
         return all_chunks
-
-
-if __name__ == "__main__":
-    repo_path = Path("data/repos/escrcpy")
-    code_parser = CodeParser(repo_path)
-    chunks = code_parser.parse(30)
-    pprint(len(chunks))
