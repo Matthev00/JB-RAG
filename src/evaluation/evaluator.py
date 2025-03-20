@@ -1,7 +1,8 @@
-from src.retriever.faiss_search import FAISSRetriever
-from src.evaluation.dataset import RAGDataset
-from src.config import EMBEDDING_MODEL
 from pathlib import Path
+
+from src.config import EMBEDDING_MODEL
+from src.evaluation.dataset import RAGDataset
+from src.retriever.faiss_search import FAISSRetriever
 
 
 class RAGEvaluator:

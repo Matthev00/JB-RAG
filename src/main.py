@@ -1,5 +1,5 @@
-from src.retriever.faiss_search import FAISSRetriever
 from src.config import EMBEDDING_MODEL
+from src.retriever.faiss_search import FAISSRetriever
 
 
 def main():
