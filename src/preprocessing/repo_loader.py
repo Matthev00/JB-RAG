@@ -7,9 +7,9 @@ from src.config import REPO_DIR
 
 class RepoLoader:
     def __init__(self, repo_url: str):
-        """ 
+        """
         Class for downloding repo from external source.
-        
+
         Args:
             repo_url (str): URL of the repository.
         """

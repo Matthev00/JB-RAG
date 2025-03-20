@@ -61,7 +61,7 @@ class FAISSRetriever:
             lims, distances, indices = self.index.range_search(query_embedding, radius)
             for i in range(len(lims) - 1):
                 for idx, dist in zip(
-                    indices[lims[i]: lims[i + 1]], distances[lims[i]: lims[i + 1]]
+                    indices[lims[i] : lims[i + 1]], distances[lims[i] : lims[i + 1]]
                 ):
                     if (
                         self.metadata[idx]["file_type"] == "code"
