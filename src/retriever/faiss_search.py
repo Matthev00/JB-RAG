@@ -37,33 +37,48 @@ class FAISSRetriever:
         with metadata_path.open("r", encoding="utf-8") as f:
             self.metadata = json.load(f)
 
-    def search(self, query: str, radius: float = 0.8) -> list[dict]:
+    def search(self, query: str, radius: float = None, top_k: int = None) -> list[dict]:
         """
-        Searches the FAISS index for all code chunks within a given similarity radius.
+        Searches the FAISS index for code chunks based on either a similarity radius or top_k results.
 
         Args:
             query (str): Query string.
-            radius (float): Radius for similarity search (cosine similarity threshold).
+            radius (float, optional): Radius for similarity search .
+            top_k (int, optional): Number of top results to retrieve.
 
         Returns:
             list: List of similar code chunks with metadata.
         """
-        query_embedding = self.model.encode([query], convert_to_numpy=True)
-        lims, distances, indices = self.index.range_search(query_embedding, radius)
+        if radius is None and top_k is None:
+            raise ValueError("Either 'radius' or 'top_k' must be specified.")
 
-        files = set()
+        query_embedding = self.model.encode([query], convert_to_numpy=True)
+
         results = []
-        for i in range(len(lims) - 1):
-            for idx, dist in zip(
-                indices[lims[i]: lims[i + 1]], distances[lims[i]: lims[i + 1]]
-            ):
+        files = set()
+
+        if radius is not None:
+            lims, distances, indices = self.index.range_search(query_embedding, radius)
+            for i in range(len(lims) - 1):
+                for idx, dist in zip(
+                    indices[lims[i]: lims[i + 1]], distances[lims[i]: lims[i + 1]]
+                ):
+                    if (
+                        self.metadata[idx]["file_type"] == "code"
+                        and self.metadata[idx]["relative_path"] not in files
+                    ):
+                        results.append((self.metadata[idx], dist))
+                        files.add(self.metadata[idx]["relative_path"])
+        elif top_k is not None:
+            distances, indices = self.index.search(query_embedding, top_k)
+            for idx, dist in zip(indices[0], distances[0]):
                 if (
                     self.metadata[idx]["file_type"] == "code"
                     and self.metadata[idx]["relative_path"] not in files
                 ):
                     results.append((self.metadata[idx], dist))
                     files.add(self.metadata[idx]["relative_path"])
-        
+
         results.sort(key=lambda x: x[1])
 
         return [metadata for metadata, _ in results]
