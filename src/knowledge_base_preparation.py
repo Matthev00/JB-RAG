@@ -7,24 +7,37 @@ from src.preprocessing.repo_loader import RepoLoader
 from src.retriever.faiss_search import FAISSRetriever
 
 
-def main():
+def download_repo(repo_url: str) -> str:
+    """
+    Downloads the repository from the given URL.
+    """
+    repo_loader = RepoLoader(repo_url)
+    repo = repo_loader.clone()
+    return repo.working_dir
+
+
+def prepare_knowledge_base(max_chunk_size: int, repo_path: str) -> None:
     """
     Script for preparing the knowledge base.
     Includes:
-        - cloning the repository
         - parsing the code
         - generating embeddings
         - building the FAISS index.
 
     Configurations can be found in src/config.py.
+
+    Args:
+        max_chunk_size (int): Maximum size of the code chunks
+        repo_path (str): Path to the repository
+
+    Returns:
+        None
     """
-    repo_loader = RepoLoader(REPO_URL)
-    repo = repo_loader.clone()
 
-    code_parser = CodeParser(Path(repo.working_dir))
-    code_chunks = code_parser.parse(MAX_CHUNK_SIZE)
+    code_parser = CodeParser(Path(repo_path))
+    code_chunks = code_parser.parse(max_chunk_size)
 
-    project_name = repo.working_dir.split("/")[-1]
+    project_name = repo_path.split("/")[-1]
 
     embedding_generator = EmbeddingGenerator()
     code_chunks = embedding_generator.create_embeddings(code_chunks)
@@ -34,6 +47,11 @@ def main():
 
     retriever = FAISSRetriever()
     retriever.build_index(project_name)
+
+
+def main():
+    repo_path = download_repo(REPO_URL)
+    prepare_knowledge_base(MAX_CHUNK_SIZE, repo_path)
 
 
 if __name__ == "__main__":
