@@ -14,7 +14,6 @@ PYTHON_INTERPRETER = python3
 ## Install Python Dependencies
 .PHONY: requirements
 requirements:
-	$(PYTHON_INTERPRETER) -m pip install uv
 	uv sync
 #	$(PYTHON_INTERPRETER) -m pip install -U pip
 #	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
@@ -53,7 +52,13 @@ create_environment:
 ## Prepare Knowledge Base
 .PHONY: prepare_kb
 prepare_kb:
-	$(PYTHON_INTERPRETER) src/knowledge_base_preparation.py
+	uv run src/knowledge_base_preparation.py
+
+
+## Run Experiments
+.PHONY: run_experiment
+run_experiment:
+	uv run src/evaluation/experiments.py
 
 #################################################################################
 # PROJECT RULES                                                                 #

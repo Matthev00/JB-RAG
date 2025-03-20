@@ -5,7 +5,7 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from src.config import EMBEDDING_MODEL, EMBEDDINGS_DIR, FAISS_INDEX_DIR
+from src.config import EMBEDDINGS_DIR, FAISS_INDEX_DIR
 
 
 class FAISSRetriever:
