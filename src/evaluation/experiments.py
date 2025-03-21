@@ -1,19 +1,36 @@
+import random
 from pathlib import Path
 
+import numpy as np
 import optuna
-import wandb
+import torch
 
+import wandb
+from src.config import EMBEDDING_MODEL
 from src.evaluation.dataset import RAGDataset
 from src.evaluation.evaluator import RAGEvaluator
 from src.knowledge_base_preparation import prepare_knowledge_base
 from src.retriever.faiss_search import FAISSRetriever
-from src.config import EMBEDDING_MODEL
+
+
+def set_seeds(seed: int):
+    """
+    Set seeds for reproducibility.
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    optuna.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
 def main():
     """
     Script for running the optimization experiment with Optuna.
     """
+    set_seeds(42)
     wandb.init(project="JB-RAG-optimization", name="optuna-experiment")
 
     dataset = RAGDataset(Path("data/escrcpy.json"))
@@ -35,7 +52,7 @@ def main():
         retriever = FAISSRetriever(EMBEDDING_MODEL)
         retriever.build_index("escrcpy")
         retriever.load_index("escrcpy")
-        
+
         retriever_params = {"radius": radius, "top_k": top_k}
         results = RAGEvaluator.evaluate(retriever, dataset, **retriever_params)
 
