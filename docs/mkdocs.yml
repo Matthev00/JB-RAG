@@ -1,0 +1,28 @@
+site_name: JB_RAG
+theme:
+  name: "material"
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Commands: commands.md
+  - API Reference:
+      - Evaluation: api/evaluation.md
+      - Data preprocessing: api/preprocessing.md
+      - Retriver: api/retriver.md
+      - Main Scripts: api/scripts.md
+
+site_author: Mateusz Ostaszewski
+# 

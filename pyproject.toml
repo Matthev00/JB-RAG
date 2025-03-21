@@ -11,6 +11,8 @@ requires-python = ">=3.13"
 dependencies = [
     "faiss-cpu>=1.10.0",
     "gitpython>=3.1.44",
+    "mkdocs-material>=9.6.9",
+    "mkdocstrings[python]>=0.29.0",
     "numpy>=2.2.4",
     "optuna>=4.2.1",
     "sentence-transformers>=3.4.1",

@@ -60,6 +60,16 @@ prepare_kb:
 run_experiment:
 	uv run src/evaluation/experiments.py
 
+## Serve documentation
+.PHONY: docs_serve
+docs_serve:
+	cd docs && mkdocs serve
+
+## Build documentation
+.PHONY: docs_build
+docs_build:
+	cd docs && mkdocs build
+
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################
