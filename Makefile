@@ -56,9 +56,9 @@ prepare_kb:
 
 
 ## Run Experiments
-.PHONY: run_experiment
-run_experiment:
-	uv run src/evaluation/experiments.py
+.PHONY: hyperparameter_experiment
+hyperparameter_experiment:
+	uv run src/evaluation/hyperparameter_experiment.py
 
 ## Serve documentation
 .PHONY: docs_serve

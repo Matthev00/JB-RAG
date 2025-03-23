@@ -41,7 +41,7 @@ make prepare_kb
 ## Replicate Experiment
 Replicates my experiments
 ```sh
-make run_experiment
+make hyperparameter_experiment
 ```
 For this you need an acount on [Weights & Biases](https://wandb.ai/site/)
 

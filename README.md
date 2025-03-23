@@ -13,6 +13,8 @@ Users can use the system for question answering over the repository:
 
 Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights & Biases.
 
+The code documentation is generated using MkDocs and hosted on GitHub Pages.
+
 ### Experiments 
 
 #### Hyperparameters tuning 
@@ -83,7 +85,7 @@ Now you can input your question, and the system will return an answer with paths
 
 ### Reproduce experiments
 
-You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make run_experiment`.
+You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make hyperparameter_experiment`.
 
 ---
 
