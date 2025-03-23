@@ -104,4 +104,5 @@ class FAISSRetriever:
         self.index.add(embeddings)
 
         index_path = (Path(FAISS_INDEX_DIR) / project_name).with_suffix(".faiss")
+        index_path.parent.mkdir(parents=True, exist_ok=True)
         faiss.write_index(self.index, str(index_path))
