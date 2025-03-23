@@ -1,7 +1,6 @@
 # JB_RAG
 
 
-
 ## **Description**
 
 Retrieval-Augmented Generation (RAG) system over a code repository for a question-answering task.
@@ -10,10 +9,30 @@ Users can use the system for question answering over the repository:
 - **Input**: Natural language query (question).
 - **Output**: Relevant code locations (files).
 
-To achieve these results, several experiments with different system configurations were conducted. Below is a report of those experiments.
+### System 
 
-### Experiments results
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights & Biases.
+
+### Experiments 
+
+#### Hyperparameters tuning 
+
+To optimize retrieval, multiple experiments were conducted by varying three key parameters:
+- max_chunk_size: Size of code/document chunks.  
+- top_k: Number of retrieved results.  
+- radius: Similarity threshold in vector space.  
+
+The evaluation metrics included Recall@10, Precision@10, F1@10, and MRR, with Recall@10 being the primary metric due to task requirements.
+
+  [REPORT WITH CONCLUSIONS](https://api.wandb.ai/links/MY_EXPERIMENTS/1n77w34b)
+
+I will continue my experiments using the model with the highest Recall@10, as this is the main optimization goal of the project. Additionally, I will include the model with the best F1@10 for comparison purposes.
+
+#### Adding expand Query
+
+
+#### Adding Reranker
+
 ---
 
 ## **Key Functionalities**
@@ -21,7 +40,7 @@ To achieve these results, several experiments with different system configuratio
 - Ability to search through a repository after preparing the knowledge base.
 - Reproducibility of experiments.
 - Option to change the embedding model by modifying the `EMBEDDING_MODEL` variable in the `src/config.py` file.
-- ption to change the repository to be searched by updating the `REPO_URL` variable in the `src/config.py` file. After making this change, you need to run `make prepare_kb again`.
+- Option to change the repository to be searched by updating the `REPO_URL` variable in the `src/config.py` file. After making this change, you need to run `make prepare_kb again`.
 
 ---
 
@@ -62,7 +81,12 @@ uv run src/main.py
 
 Now you can input your question, and the system will return an answer with paths to the relevant files.
 
+### Reproduce experiments
+
+You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make run_experiment`.
+
 ---
+
 
 ## Project Repository Organization 
 

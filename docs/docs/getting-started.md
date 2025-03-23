@@ -20,12 +20,14 @@ make prepare_kb
 
 ## Step 2: Inference with System
 
-TO DO
+run
 
-## (Optional) Replicate Experiment
-You can replicate my experiments by running 
 ```sh
-make run_experiment
+uv run src/main.py
 ```
-For this you need an acount on [Weights & Biases](https://wandb.ai/site/)
 
+Now you can input your question, and the system will return an answer with paths to the relevant files.
+
+## Step 3:(Optional) Replicate Experiment
+You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make run_experiment`.
+**Important** - before running experiment you need to do step 1 Prepare Knowladge Base
