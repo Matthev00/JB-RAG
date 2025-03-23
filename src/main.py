@@ -2,16 +2,34 @@ from src.config import EMBEDDING_MODEL
 from src.retriever.faiss_search import FAISSRetriever
 
 
+def selcet_type():
+    print("Select the type of search you want to perform:")
+    print("1. Radius search")
+    print("2. Top K search")
+    print("3. Exit")
+    type = int(input())
+    return type
+
+
 def main():
     retriever = FAISSRetriever(embedding_model=EMBEDDING_MODEL)
     retriever.load_index("escrcpy")
-    results = retriever.search(
-        "How does the application determine and validate the paths for external binaries (like scrcpy, adb, and gnirehtet) at startup, and which module or file manages this logic?",
-        radius=0.3,
-    )
-    for result in results:
-        print(result["relative_path"])
-
+    type = selcet_type()
+    if type == 3:
+        return
+    while True:
+        try:
+            query = input("Enter your query: ")
+            if query == "exit":
+                break
+            if type == 1:
+                results = retriever.search(query, radius=0.3)
+            elif type == 2:
+                results = retriever.search(query, top_k=4)
+            for result in results:
+                print(result["relative_path"])
+        except KeyboardInterrupt:
+            break
 
 if __name__ == "__main__":
     main()
