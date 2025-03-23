@@ -6,6 +6,7 @@ import optuna
 import torch
 
 import wandb
+from optuna.integration import WeightsAndBiasesCallback
 from src.config import EMBEDDING_MODEL
 from src.evaluation.dataset import RAGDataset
 from src.evaluation.evaluator import RAGEvaluator
@@ -38,7 +39,14 @@ def main():
         """
         Objective function for Optuna to optimize parameters.
         """
-        max_chunk_size = trial.suggest_int("max_chunk_size", 10, 100)
+        wandb.init(
+            project="JB-RAG-optimization",
+            name=f"trial-{trial.number}",
+            config={"trial_number": trial.number},
+            reinit=True
+        )
+
+        max_chunk_size = trial.suggest_int("max_chunk_size", 10, 120)
         use_radius = trial.suggest_categorical("use_radius", [True, False])
         if use_radius:
             radius = trial.suggest_float("radius", 0.05, 1.0)
@@ -66,15 +74,12 @@ def main():
                 "MRR": results["MRR"],
             }
         )
+        wandb.finish()
 
         return results["Recall@10"]
 
     study = optuna.create_study(direction="maximize")
     study.optimize(objective, n_trials=100)
-
-    wandb.log({"best_params": study.best_params, "best_Recall@10": study.best_value})
-
-    wandb.finish()
 
     print("Best parameters:", study.best_params)
     print("Best Recall@10:", study.best_value)
