@@ -64,7 +64,7 @@ class FAISSRetriever:
                     indices[lims[i] : lims[i + 1]], distances[lims[i] : lims[i + 1]]
                 ):
                     if (
-                        self.metadata[idx]["file_type"] == "code"
+                        self.metadata[idx]["file_type"] != "other"
                         and self.metadata[idx]["relative_path"] not in files
                     ):
                         results.append((self.metadata[idx], dist))
@@ -73,7 +73,7 @@ class FAISSRetriever:
             distances, indices = self.index.search(query_embedding, top_k)
             for idx, dist in zip(indices[0], distances[0]):
                 if (
-                    self.metadata[idx]["file_type"] == "code"
+                    self.metadata[idx]["file_type"] != "other"
                     and self.metadata[idx]["relative_path"] not in files
                 ):
                     results.append((self.metadata[idx], dist))
