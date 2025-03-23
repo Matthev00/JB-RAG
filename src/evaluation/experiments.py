@@ -6,7 +6,6 @@ import optuna
 import torch
 
 import wandb
-from optuna.integration import WeightsAndBiasesCallback
 from src.config import EMBEDDING_MODEL
 from src.evaluation.dataset import RAGDataset
 from src.evaluation.evaluator import RAGEvaluator
