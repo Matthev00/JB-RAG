@@ -39,6 +39,12 @@ make prepare_kb
 ```
 
 ## Replicate Experiment
+Evaluate on validation data
+1. Download file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view)
+2. Run `make evaluate`.
+
+
+## Replicate Experiment
 Replicates my experiments   
 For this you need an acount on [Weights & Biases](https://wandb.ai/site/)
 ```sh

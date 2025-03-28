@@ -7,6 +7,7 @@ from sentence_transformers import SentenceTransformer
 
 from src.config import EMBEDDINGS_DIR, FAISS_INDEX_DIR
 from src.retriever.query_expander import QueryExpander
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 class FAISSRetriever:
@@ -44,6 +45,8 @@ class FAISSRetriever:
         radius: float = None,
         top_k: int = None,
         expand_query_type: str = None,
+        rerank: bool = False,
+        similarity_threshold: float = 0.5
     ) -> list[dict]:
         """
         Searches the FAISS index for code chunks based on either a similarity radius or top_k results.
@@ -53,6 +56,8 @@ class FAISSRetriever:
             radius (float, optional): Radius for similarity search .
             top_k (int, optional): Number of top results to retrieve.
             expand_query_type (str, optional): Type of expand query technique(None, wordnet, candidate_terms)
+            rerank (bool): Use reranker or not
+            similarity_threshold (float): similarity threshold for reranker
 
         Returns:
             list: List of similar code chunks with metadata.
@@ -94,9 +99,36 @@ class FAISSRetriever:
                     results.append((self.metadata[idx], dist))
                     files.add(self.metadata[idx]["relative_path"])
 
-        results.sort(key=lambda x: x[1])
+        if rerank:
+            self.rerank(query_embedding, results, similarity_threshold)
+        else:
+            results.sort(key=lambda x: x[1])
 
         return [metadata for metadata, _ in results]
+    
+    def rerank(self, query_embedding: np.ndarray, results: list[dict], similarity_threshold: float) -> list[dict]:
+        """
+        Reranks the search results based on the cosine similarity between the query embedding and the code chunks.
+
+        Args:
+            query_embedding (np.ndarray): Precomputed embedding of the query.
+            results (list): List of search results with metadata.
+            similarity_threshold (float): Minimum cosine similarity score to include a result.
+
+        Returns:
+            list: List of reranked search results with metadata.
+        """
+        code_chunks = [res[0]["code"] for res in results]
+        code_embeddings = self.model.encode(code_chunks, convert_to_numpy=True)
+
+        scores = cosine_similarity(query_embedding, code_embeddings)[0]
+
+        filtered_results = [
+            (res, score) for res, score in zip(results, scores) if score >= similarity_threshold
+        ]
+        filtered_results = sorted(filtered_results, key=lambda x: x[1], reverse=True)
+
+        return filtered_results
 
     def build_index(self, project_name: str) -> None:
         """

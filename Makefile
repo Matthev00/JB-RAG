@@ -56,11 +56,12 @@ prepare_kb:
 	uv run src/knowledge_base_preparation.py
 
 
-## Run Experiments
+## Run hyperparameters experiment
 .PHONY: hyperparameter_experiment
 hyperparameter_experiment:
 	uv run src/evaluation/hyperparameters_experiment.py
 
+## Run query expansion experiment
 .PHONY: query_expansion_experiment
 query_expansion_experiment:
 	uv run src/evaluation/query_expansion_experiment.py
@@ -74,6 +75,11 @@ docs_serve:
 .PHONY: docs_build
 docs_build:
 	cd docs && mkdocs build
+
+## make evaluation
+.PHONY: evaluate
+evaluate:
+	uv run src/evaluate.py
 
 #################################################################################
 # PROJECT RULES                                                                 #

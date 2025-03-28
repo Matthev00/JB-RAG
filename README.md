@@ -42,8 +42,7 @@ The system implements Query Expansion to enhance the quality of search results b
 
 
 #### Adding Reranker
-
-
+I attempted to add a reranker to improve the ranking of search results. However, since the FAISS `search` method already uses `range_search` and sorts the results by distance, adding a reranker based on the same tokenizer and cosine similarity calculations did not bring any noticeable improvements.
 
 ---
 
@@ -94,12 +93,12 @@ uv run src/main.py
 Now you can input your question, and the system will return an answer with paths to the relevant files.
 
 ## Evaluate model
-1. Downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view)
-2. Run `make evaluation`.
+1. Download file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view)
+2. Run `make evaluate`.
 
 ### Reproduce experiments
 
-You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make hyperparameter_experiment`.
+You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make hyperparameter_experiment` and `make query_expansion_experiment`.
 
 ---
 
