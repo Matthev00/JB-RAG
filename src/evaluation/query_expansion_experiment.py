@@ -49,7 +49,12 @@ def main():
             {
                 "expand_query_type": expand_query_type,
                 "latency": latency,
-                "radius": retriever_params.get("radius"),
+                "query_top_k": (
+                    retriever_params.get("query_top_k")
+                    if expand_query_type == "candidate_terms"
+                    else None
+                ),
+                "radius": (retriever_params.get("radius")),
                 "Precision@10": results["Precision@10"],
                 "Recall@10": results["Recall@10"],
                 "F1@10": results["F1@10"],
@@ -59,10 +64,7 @@ def main():
         return results
 
     query_expansion_types = [None, "candidate_terms", "wordnet"]
-    retriever_configs = [
-        {"radius": 0.3, "top_k": None},
-        {"radius": 0.05, "top_k": None},
-    ]
+    retriever_configs = [{"top_k": 11, "query_top_k": i} for i in range(20)]
     trial_number = 1
     for expand_query_type in query_expansion_types:
         for retriever_params in retriever_configs:

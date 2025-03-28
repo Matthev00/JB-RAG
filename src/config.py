@@ -1,7 +1,7 @@
 REPO_DIR = "data/repos"
 EMBEDDINGS_DIR = "data/embeddings"
 FAISS_INDEX_DIR = "data/faiss"
-MAX_CHUNK_SIZE = 55
+MAX_CHUNK_SIZE = 110
 
 REPO_URL = "https://github.com/viarotel-org/escrcpy.git"
 

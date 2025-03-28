@@ -39,6 +39,21 @@ The system implements Query Expansion to enhance the quality of search results b
    - This approach uses the WordNet lexical database to find synonyms and related terms for words in the query. It dynamically generates expanded queries by including these related terms, which can improve recall for queries with synonyms or alternative phrasings.
 
 **Results**
+The addition of Query Expansion based on static candidate terms resulted in a very slight improvement in recall, increasing it from **0.50343** to **0.50833**. However, this improvement came at a significant cost in terms of latency, which increased by approximately **3 times**.
+
+**Conclusions**
+
+1. **When to Use Query Expansion**:
+   - Query Expansion based on static candidate terms may be beneficial in scenarios where **recall is critical**, and even a small improvement in recall can justify the additional latency. For example:
+     - When the system is used for exploratory searches where missing relevant results is unacceptable.
+     - In use cases where the dataset is sparse, and expanding the query helps retrieve more relevant results.
+
+2. **When to Avoid Query Expansion**:
+   - If **latency is a critical factor**, such as in real-time systems or applications where users expect instant responses, Query Expansion may not be suitable.
+   - If the slight improvement in recall does not outweigh the increased computational cost, it is better to rely on the original query without expansion.
+
+3. **Trade-offs**:
+   - The decision to use Query Expansion should be based on the specific requirements of the application. For systems prioritizing **quality over speed**, Query Expansion can be a valuable addition. However, for systems where **speed is paramount**, it is better to avoid it.
 
 
 #### Adding Reranker
@@ -89,6 +104,7 @@ run
 ```sh
 streamlit run src/main.py --server.fileWatcherType=none
 ```
+**Default values are, in my opinion, the best based on the reports.**  
 This will launch a web-based interface where you can interact with the system. Open the provided URL in your browser (e.g., http://localhost:8501).
 
 **How to Use the Interface**

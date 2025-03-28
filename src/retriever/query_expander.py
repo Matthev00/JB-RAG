@@ -9,7 +9,7 @@ from src.retriever.candidate_terms import candidate_terms
 class QueryExpander:
     @staticmethod
     def expand_query_with_embeddings(
-        query: str, model: SentenceTransformer, top_k: int = 10
+        query: str, model: SentenceTransformer, top_k: int = 5
     ) -> str:
         """
         Expands the query by finding semantically similar terms using embeddings.

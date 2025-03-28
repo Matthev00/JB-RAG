@@ -47,6 +47,7 @@ class FAISSRetriever:
         expand_query_type: str = None,
         rerank: bool = False,
         similarity_threshold: float = 0.5,
+        query_top_k: int = 7,
     ) -> list[dict]:
         """
         Searches the FAISS index for code chunks based on either a similarity radius or top_k results.
@@ -58,6 +59,7 @@ class FAISSRetriever:
             expand_query_type (str, optional): Type of expand query technique(None, wordnet, candidate_terms)
             rerank (bool): Use reranker or not
             similarity_threshold (float): similarity threshold for reranker
+            query_top_k (int): top k for query expansion
 
         Returns:
             list: List of similar code chunks with metadata.
@@ -69,7 +71,7 @@ class FAISSRetriever:
             query = QueryExpander.expand_query_with_wordnet(query=query)
         elif expand_query_type == "candidate_terms":
             query = QueryExpander.expand_query_with_embeddings(
-                query=query, model=self.model
+                query=query, model=self.model, top_k=query_top_k
             )
 
         query_embedding = self.model.encode([query], convert_to_numpy=True)
