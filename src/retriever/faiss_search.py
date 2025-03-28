@@ -4,10 +4,10 @@ from pathlib import Path
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from src.config import EMBEDDINGS_DIR, FAISS_INDEX_DIR
 from src.retriever.query_expander import QueryExpander
-from sklearn.metrics.pairwise import cosine_similarity
 
 
 class FAISSRetriever:
@@ -46,7 +46,7 @@ class FAISSRetriever:
         top_k: int = None,
         expand_query_type: str = None,
         rerank: bool = False,
-        similarity_threshold: float = 0.5
+        similarity_threshold: float = 0.5,
     ) -> list[dict]:
         """
         Searches the FAISS index for code chunks based on either a similarity radius or top_k results.
@@ -105,8 +105,13 @@ class FAISSRetriever:
             results.sort(key=lambda x: x[1])
 
         return [metadata for metadata, _ in results]
-    
-    def rerank(self, query_embedding: np.ndarray, results: list[dict], similarity_threshold: float) -> list[dict]:
+
+    def rerank(
+        self,
+        query_embedding: np.ndarray,
+        results: list[dict],
+        similarity_threshold: float,
+    ) -> list[dict]:
         """
         Reranks the search results based on the cosine similarity between the query embedding and the code chunks.
 
@@ -124,7 +129,9 @@ class FAISSRetriever:
         scores = cosine_similarity(query_embedding, code_embeddings)[0]
 
         filtered_results = [
-            (res, score) for res, score in zip(results, scores) if score >= similarity_threshold
+            (res, score)
+            for res, score in zip(results, scores)
+            if score >= similarity_threshold
         ]
         filtered_results = sorted(filtered_results, key=lambda x: x[1], reverse=True)
 

@@ -16,7 +16,10 @@ def main():
     set_seeds(42)
 
     dataset = RAGDataset(Path("data/escrcpy_val.json"))
-    def evaluate_query_expansion(expand_query_type: str, retriever_params: dict, trial_number):
+
+    def evaluate_query_expansion(
+        expand_query_type: str, retriever_params: dict, trial_number
+    ):
         """
         Evaluates the system with a specific Query Expansion type.
 
