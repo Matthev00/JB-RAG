@@ -83,14 +83,39 @@ make prepare_kb
 ```
 This will download the repository specified in `src/config.py` as `REPO_URL`(this is the repository mentioned in the task). If you want to test with a different repository, you can simply change the `REPO_URL`.
 
-### Have fun 
+### Run UI 
 run
 
 ```sh
-uv run src/main.py
+streamlit run src/main.py --server.fileWatcherType=none
 ```
+This will launch a web-based interface where you can interact with the system. Open the provided URL in your browser (e.g., http://localhost:8501).
 
-Now you can input your question, and the system will return an answer with paths to the relevant files.
+**How to Use the Interface**
+
+1. **Select the Search Type**:
+   - Choose between:
+     - **Radius Search**: Searches for results within a specified similarity radius.
+     - **Top K Search**: Retrieves the top K most similar results.
+
+2. **Set Parameters**:
+   - For **Radius Search**, adjust the radius using the slider.
+   - For **Top K Search**, select the number of top results to retrieve.
+
+3. **Query Expansion**:
+   - Choose a query expansion method:
+     - **None**: No query expansion.
+     - **WordNet**: Expands the query using synonyms from WordNet.
+     - **Candidate Terms**: Expands the query using predefined candidate terms.
+
+4. **Enter Your Query**:
+   - Type your query in the input box.
+
+5. **Search**:
+   - Click the "Search" button to retrieve results.
+
+6. **View Results**:
+   - The results will be displayed as a list of file paths. Each result corresponds to a code chunk that matches your query.
 
 ## Evaluate model
 1. Download file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view)

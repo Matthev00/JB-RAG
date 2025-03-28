@@ -38,6 +38,11 @@ make format
 make prepare_kb
 ```
 
+## Have fun with CODE RAG
+```sh
+streamlit run src/main.py --server.fileWatcherType=none
+```
+
 ## Replicate Experiment
 Evaluate on validation data
 1. Download file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view)
@@ -65,3 +70,4 @@ Builds the documentation using mkdocs.
 ```sh
 make docs_build
 ```
+

@@ -1,38 +1,55 @@
+import streamlit as st
 from src.config import EMBEDDING_MODEL
 from src.retriever.faiss_search import FAISSRetriever
 
+retriever = FAISSRetriever(embedding_model=EMBEDDING_MODEL)
+retriever.load_index("escrcpy")
 
-def selcet_type():
-    print("Select the type of search you want to perform:")
-    print("1. Radius search")
-    print("2. Top K search")
-    print("3. Exit")
-    type = int(input())
-    return type
+st.title("Code Search Application")
 
+search_type = st.radio(
+    "Select the type of search you want to perform:",
+    ("Radius search", "Top K search"),
+)
 
-def main():
-    retriever = FAISSRetriever(embedding_model=EMBEDDING_MODEL)
-    retriever.load_index("escrcpy")
-    type = selcet_type()
-    if type == 3:
-        return
-    while True:
-        try:
-            query = input("Enter your query: ")
-            if query == "exit":
-                break
-            if type == 1:
-                results = retriever.search(
-                    query, radius=0.3, expand_query_type="wordnet"
-                )
-            elif type == 2:
-                results = retriever.search(query, top_k=4, rerank=False)
+if search_type == "Radius search":
+    radius = st.slider("Select radius for search:", min_value=0.1, max_value=1.0, step=0.05, value=0.3)
+    expand_query_type = st.selectbox(
+        "Select query expansion type:",
+        ("None", "WordNet", "Candidate Terms"),
+    )
+elif search_type == "Top K search":
+    top_k = st.slider("Select the number of top results:", min_value=1, max_value=20, step=1, value=10)
+    expand_query_type = st.selectbox(
+        "Select query expansion type:",
+        ("None", "WordNet", "Candidate Terms"),
+    )
+
+query = st.text_input("Enter your query:")
+
+if st.button("Search"):
+    if query.strip() == "":
+        st.warning("Please enter a query.")
+    else:
+        if search_type == "Radius search":
+            expand_query = None
+            if expand_query_type == "WordNet":
+                expand_query = "wordnet"
+            elif expand_query_type == "Candidate Terms":
+                expand_query = "candidate_terms"
+            results = retriever.search(query, radius=radius, expand_query_type=expand_query)
+        elif search_type == "Top K search":
+            expand_query = None
+            if expand_query_type == "WordNet":
+                expand_query = "wordnet"
+            elif expand_query_type == "Candidate Terms":
+                expand_query = "candidate_terms"
+
+            results = retriever.search(query, top_k=top_k, expand_query_type=expand_query)
+
+        if results:
+            st.success(f"Found {len(results)} results:")
             for result in results:
-                print(result["relative_path"])
-        except KeyboardInterrupt:
-            break
-
-
-if __name__ == "__main__":
-    main()
+                st.write(f"- **{result['relative_path']}**")
+        else:
+            st.warning("No results found.")
