@@ -15,6 +15,7 @@ PYTHON_INTERPRETER = python3
 .PHONY: requirements
 requirements:
 	uv sync
+	uv run python -m nltk.downloader wordnet
 #	$(PYTHON_INTERPRETER) -m pip install -U pip
 #	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 	
@@ -58,7 +59,11 @@ prepare_kb:
 ## Run Experiments
 .PHONY: hyperparameter_experiment
 hyperparameter_experiment:
-	uv run src/evaluation/hyperparameter_experiment.py
+	uv run src/evaluation/hyperparameters_experiment.py
+
+.PHONY: query_expansion_experiment
+query_expansion_experiment:
+	uv run src/evaluation/query_expansion_experiment.py
 
 ## Serve documentation
 .PHONY: docs_serve

@@ -6,6 +6,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 from src.config import EMBEDDINGS_DIR, FAISS_INDEX_DIR
+from src.retriever.query_expander import QueryExpander
 
 
 class FAISSRetriever:
@@ -37,7 +38,13 @@ class FAISSRetriever:
         with metadata_path.open("r", encoding="utf-8") as f:
             self.metadata = json.load(f)
 
-    def search(self, query: str, radius: float = None, top_k: int = None) -> list[dict]:
+    def search(
+        self,
+        query: str,
+        radius: float = None,
+        top_k: int = None,
+        expand_query_type: str = None,
+    ) -> list[dict]:
         """
         Searches the FAISS index for code chunks based on either a similarity radius or top_k results.
 
@@ -45,12 +52,20 @@ class FAISSRetriever:
             query (str): Query string.
             radius (float, optional): Radius for similarity search .
             top_k (int, optional): Number of top results to retrieve.
+            expand_query_type (str, optional): Type of expand query technique(None, wordnet, candidate_terms)
 
         Returns:
             list: List of similar code chunks with metadata.
         """
         if radius is None and top_k is None:
             raise ValueError("Either 'radius' or 'top_k' must be specified.")
+
+        if expand_query_type == "wordnet":
+            query = QueryExpander.expand_query_with_wordnet(query=query)
+        elif expand_query_type == "candidate_terms":
+            query = QueryExpander.expand_query_with_embeddings(
+                query=query, model=self.model
+            )
 
         query_embedding = self.model.encode([query], convert_to_numpy=True)
 

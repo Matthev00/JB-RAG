@@ -1,28 +1,14 @@
-import random
 from pathlib import Path
 
-import numpy as np
 import optuna
-import torch
 
 import wandb
 from src.config import EMBEDDING_MODEL
 from src.evaluation.dataset import RAGDataset
 from src.evaluation.evaluator import RAGEvaluator
+from src.evaluation.utils import set_seeds
 from src.knowledge_base_preparation import prepare_knowledge_base
 from src.retriever.faiss_search import FAISSRetriever
-
-
-def set_seeds(seed: int) -> None:
-    """
-    Set seeds for reproducibility.
-    """
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
 
 
 def main():
@@ -42,7 +28,7 @@ def main():
             project="JB-RAG-optimization",
             name=f"trial-{trial.number}",
             config={"trial_number": trial.number},
-            reinit=True
+            reinit=True,
         )
 
         max_chunk_size = trial.suggest_int("max_chunk_size", 10, 120)

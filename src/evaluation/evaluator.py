@@ -26,7 +26,8 @@ class RAGEvaluator:
 
         for question, expected_files in dataset:
             results = retriever.search(question, **retriever_params)
-            retrieved_files = set([res["relative_path"] for res in results])
+            top_10_results = results[:10]
+            retrieved_files = set([res["relative_path"] for res in top_10_results])
 
             # Precision@10
             precision = (
@@ -52,11 +53,11 @@ class RAGEvaluator:
             )
             f1_scores.append(f1)
 
-            # MRR
+            # MRR (Mean Reciprocal Rank)
             rank = next(
                 (
                     i + 1
-                    for i, res in enumerate(results)
+                    for i, res in enumerate(top_10_results)
                     if res["relative_path"] in expected_files
                 ),
                 0,
