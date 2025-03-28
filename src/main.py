@@ -23,13 +23,16 @@ def main():
             if query == "exit":
                 break
             if type == 1:
-                results = retriever.search(query, radius=0.3)
+                results = retriever.search(
+                    query, radius=0.3, expand_query_type="wordnet"
+                )
             elif type == 2:
-                results = retriever.search(query, top_k=4)
+                results = retriever.search(query, top_k=4, rerank=False)
             for result in results:
                 print(result["relative_path"])
         except KeyboardInterrupt:
             break
+
 
 if __name__ == "__main__":
     main()
