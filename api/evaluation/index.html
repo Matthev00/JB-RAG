@@ -445,16 +445,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#src.evaluation.experiments" class="md-nav__link">
+  <a href="#src.evaluation.query_expansion_experiment" class="md-nav__link">
     <span class="md-ellipsis">
-      experiments
+      query_expansion_experiment
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#src.evaluation.experiments.main" class="md-nav__link">
+  <a href="#src.evaluation.query_expansion_experiment.main" class="md-nav__link">
     <span class="md-ellipsis">
       main
     </span>
@@ -463,7 +463,34 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#src.evaluation.experiments.set_seeds" class="md-nav__link">
+  <a href="#src.evaluation.hyperparameters_experiment" class="md-nav__link">
+    <span class="md-ellipsis">
+      hyperparameters_experiment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.evaluation.hyperparameters_experiment.main" class="md-nav__link">
+    <span class="md-ellipsis">
+      main
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.evaluation.utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      utils
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.evaluation.utils.set_seeds" class="md-nav__link">
     <span class="md-ellipsis">
       set_seeds
     </span>
@@ -673,16 +700,16 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#src.evaluation.experiments" class="md-nav__link">
+  <a href="#src.evaluation.query_expansion_experiment" class="md-nav__link">
     <span class="md-ellipsis">
-      experiments
+      query_expansion_experiment
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#src.evaluation.experiments.main" class="md-nav__link">
+  <a href="#src.evaluation.query_expansion_experiment.main" class="md-nav__link">
     <span class="md-ellipsis">
       main
     </span>
@@ -691,7 +718,34 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#src.evaluation.experiments.set_seeds" class="md-nav__link">
+  <a href="#src.evaluation.hyperparameters_experiment" class="md-nav__link">
+    <span class="md-ellipsis">
+      hyperparameters_experiment
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.evaluation.hyperparameters_experiment.main" class="md-nav__link">
+    <span class="md-ellipsis">
+      main
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.evaluation.utils" class="md-nav__link">
+    <span class="md-ellipsis">
+      utils
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#src.evaluation.utils.set_seeds" class="md-nav__link">
     <span class="md-ellipsis">
       set_seeds
     </span>
@@ -1239,7 +1293,8 @@
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RAGEvaluator</span><span class="p">:</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RAGEvaluator</span><span class="p">:</span>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">retriever</span><span class="p">:</span> <span class="n">FAISSRetriever</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">RAGDataset</span><span class="p">,</span> <span class="o">**</span><span class="n">retriever_params</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1260,7 +1315,8 @@
 
         <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">expected_files</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="o">**</span><span class="n">retriever_params</span><span class="p">)</span>
-            <span class="n">retrieved_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;relative_path&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+            <span class="n">top_10_results</span> <span class="o">=</span> <span class="n">results</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+            <span class="n">retrieved_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;relative_path&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">top_10_results</span><span class="p">])</span>
 
             <span class="c1"># Precision@10</span>
             <span class="n">precision</span> <span class="o">=</span> <span class="p">(</span>
@@ -1286,11 +1342,11 @@
             <span class="p">)</span>
             <span class="n">f1_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
 
-            <span class="c1"># MRR</span>
+            <span class="c1"># MRR (Mean Reciprocal Rank)</span>
             <span class="n">rank</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
                 <span class="p">(</span>
                     <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
-                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">top_10_results</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;relative_path&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">expected_files</span>
                 <span class="p">),</span>
                 <span class="mi">0</span><span class="p">,</span>
@@ -1482,7 +1538,8 @@
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@staticmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">retriever</span><span class="p">:</span> <span class="n">FAISSRetriever</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">RAGDataset</span><span class="p">,</span> <span class="o">**</span><span class="n">retriever_params</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Evaluates the retriever on the given dataset.</span>
@@ -1502,7 +1559,8 @@
 
     <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">expected_files</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
         <span class="n">results</span> <span class="o">=</span> <span class="n">retriever</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="o">**</span><span class="n">retriever_params</span><span class="p">)</span>
-        <span class="n">retrieved_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;relative_path&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+        <span class="n">top_10_results</span> <span class="o">=</span> <span class="n">results</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+        <span class="n">retrieved_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;relative_path&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">top_10_results</span><span class="p">])</span>
 
         <span class="c1"># Precision@10</span>
         <span class="n">precision</span> <span class="o">=</span> <span class="p">(</span>
@@ -1528,11 +1586,11 @@
         <span class="p">)</span>
         <span class="n">f1_scores</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
 
-        <span class="c1"># MRR</span>
+        <span class="c1"># MRR (Mean Reciprocal Rank)</span>
         <span class="n">rank</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">top_10_results</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;relative_path&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">expected_files</span>
             <span class="p">),</span>
             <span class="mi">0</span><span class="p">,</span>
@@ -1571,7 +1629,7 @@
 
 
 
-<a id="src.evaluation.experiments"></a>
+<a id="src.evaluation.query_expansion_experiment"></a>
     <div class="doc doc-contents first">
 
 
@@ -1595,7 +1653,177 @@
 <div class="doc doc-object doc-function">
 
 
-<h2 id="src.evaluation.experiments.main" class="doc doc-heading">
+<h2 id="src.evaluation.query_expansion_experiment.main" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">main</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Script for running Query Expansion experiments.</p>
+
+
+            <details class="quote">
+              <summary>Source code in <code>src/evaluation/query_expansion_experiment.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Script for running Query Expansion experiments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">set_seeds</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">RAGDataset</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/escrcpy_val.json&quot;</span><span class="p">))</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_query_expansion</span><span class="p">(</span><span class="n">expand_query_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retriever_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">trial_number</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the system with a specific Query Expansion type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            expand_query_type (str): Type of Query Expansion (None, candidate_terms, wordnet).</span>
+<span class="sd">            retriever_params (dict): Parameters for the retriever (radius or top_k).</span>
+<span class="sd">            trail_number (int): idx of trail</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: Evaluation results including quality metrics and latency.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wandb</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+            <span class="n">project</span><span class="o">=</span><span class="s2">&quot;JB-RAG-query-expansion&quot;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;trial-</span><span class="si">{</span><span class="n">trial_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">reinit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">retriever</span> <span class="o">=</span> <span class="n">FAISSRetriever</span><span class="p">(</span><span class="n">EMBEDDING_MODEL</span><span class="p">)</span>
+        <span class="n">retriever</span><span class="o">.</span><span class="n">load_index</span><span class="p">(</span><span class="s2">&quot;escrcpy&quot;</span><span class="p">)</span>
+
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">RAGEvaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span>
+            <span class="n">retriever</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">expand_query_type</span><span class="o">=</span><span class="n">expand_query_type</span><span class="p">,</span> <span class="o">**</span><span class="n">retriever_params</span>
+        <span class="p">)</span>
+        <span class="n">latency</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+
+        <span class="n">wandb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;expand_query_type&quot;</span><span class="p">:</span> <span class="n">expand_query_type</span><span class="p">,</span>
+                <span class="s2">&quot;latency&quot;</span><span class="p">:</span> <span class="n">latency</span><span class="p">,</span>
+                <span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="n">retriever_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;radius&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;Precision@10&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;Precision@10&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;Recall@10&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;Recall@10&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;F1@10&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;F1@10&quot;</span><span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span>
+
+    <span class="n">query_expansion_types</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;candidate_terms&quot;</span><span class="p">,</span> <span class="s2">&quot;wordnet&quot;</span><span class="p">]</span>
+    <span class="n">retriever_configs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
+    <span class="p">]</span>
+    <span class="n">trial_number</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">expand_query_type</span> <span class="ow">in</span> <span class="n">query_expansion_types</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">retriever_params</span> <span class="ow">in</span> <span class="n">retriever_configs</span><span class="p">:</span>
+            <span class="n">evaluate_query_expansion</span><span class="p">(</span><span class="n">expand_query_type</span><span class="p">,</span> <span class="n">retriever_params</span><span class="p">,</span> <span class="n">trial_number</span><span class="p">)</span>
+            <span class="n">trial_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">wandb</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="src.evaluation.hyperparameters_experiment"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="src.evaluation.hyperparameters_experiment.main" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">main</span><span class="p">()</span></code>
 
 </h2>
@@ -1607,8 +1835,22 @@
 
 
             <details class="quote">
-              <summary>Source code in <code>src/evaluation/experiments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">28</span>
+              <summary>Source code in <code>src/evaluation/hyperparameters_experiment.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
 <span class="normal">31</span>
@@ -1650,21 +1892,7 @@
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Script for running the optimization experiment with Optuna.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1681,7 +1909,7 @@
             <span class="n">project</span><span class="o">=</span><span class="s2">&quot;JB-RAG-optimization&quot;</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;trial-</span><span class="si">{</span><span class="n">trial</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="n">config</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;trial_number&quot;</span><span class="p">:</span> <span class="n">trial</span><span class="o">.</span><span class="n">number</span><span class="p">},</span>
-            <span class="n">reinit</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">reinit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">max_chunk_size</span> <span class="o">=</span> <span class="n">trial</span><span class="o">.</span><span class="n">suggest_int</span><span class="p">(</span><span class="s2">&quot;max_chunk_size&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">120</span><span class="p">)</span>
@@ -1727,10 +1955,43 @@
 
 </div>
 
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="src.evaluation.utils"></a>
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
 <div class="doc doc-object doc-function">
 
 
-<h2 id="src.evaluation.experiments.set_seeds" class="doc doc-heading">
+<h2 id="src.evaluation.utils.set_seeds" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">set_seeds</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span></code>
 
 </h2>
@@ -1742,17 +2003,17 @@
 
 
             <details class="quote">
-              <summary>Source code in <code>src/evaluation/experiments.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_seeds</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+              <summary>Source code in <code>src/evaluation/utils.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">set_seeds</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set seeds for reproducibility.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
