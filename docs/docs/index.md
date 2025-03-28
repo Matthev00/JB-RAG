@@ -1,4 +1,4 @@
-# AIArchitect documentation!
+# CODE RAG documentation!
 
 ## Description
 

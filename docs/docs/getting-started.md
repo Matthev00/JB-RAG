@@ -29,5 +29,5 @@ uv run src/main.py
 Now you can input your question, and the system will return an answer with paths to the relevant files.
 
 ## Step 3:(Optional) Replicate Experiment
-You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make hyperparameter_experiment`.
+You can reproduce experiments by preparing validation dataset by downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view) and saving it as `/data/escrcpy_val.json`. Then you can run `make hyperparameter_experiment` and `make query_expansion_experiment` or even `make reranker_experiment`.
 **Important** - before running experiment you need to do step 1 Prepare Knowladge Base

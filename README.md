@@ -13,7 +13,7 @@ Users can use the system for question answering over the repository:
 
 Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights & Biases.
 
-The code documentation is generated using MkDocs and hosted on GitHub Pages.
+The code documentation is generated using MkDocs and hosted on [GitHub Pages](https://matthev00.github.io/JB-RAG/).
 
 ### Experiments 
 
@@ -31,9 +31,19 @@ The evaluation metrics included Recall@10, Precision@10, F1@10, and MRR, with Re
 I will continue my experiments using the model with the highest Recall@10, as this is the main optimization goal of the project. Additionally, I will include the model with the best F1@10 for comparison purposes.
 
 #### Adding expand Query
+The system implements Query Expansion to enhance the quality of search results by enriching the user's query with additional related terms. Two approaches to Query Expansion are supported:
+1. **Static Candidate Terms**:
+   - A predefined list of candidate terms is used to expand the query. These terms cover a wide range of topics, such as programming concepts (e.g., "function", "class"), user interface elements (e.g., "button", "dialog"), and system-related terms (e.g., "network", "configuration"). The system calculates the semantic similarity between the query and these candidate terms using a SentenceTransformer model and selects the most relevant terms to expand the query.
+
+2. **WordNet-based Expansion**:
+   - This approach uses the WordNet lexical database to find synonyms and related terms for words in the query. It dynamically generates expanded queries by including these related terms, which can improve recall for queries with synonyms or alternative phrasings.
+
+**Results**
 
 
 #### Adding Reranker
+
+
 
 ---
 
@@ -82,6 +92,10 @@ uv run src/main.py
 ```
 
 Now you can input your question, and the system will return an answer with paths to the relevant files.
+
+## Evaluate model
+1. Downloading file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view)
+2. Run `make evaluation`.
 
 ### Reproduce experiments
 

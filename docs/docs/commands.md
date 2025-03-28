@@ -39,11 +39,14 @@ make prepare_kb
 ```
 
 ## Replicate Experiment
-Replicates my experiments
+Replicates my experiments   
+For this you need an acount on [Weights & Biases](https://wandb.ai/site/)
 ```sh
 make hyperparameter_experiment
 ```
-For this you need an acount on [Weights & Biases](https://wandb.ai/site/)
+```sh
+make query_expansion_experiment
+```
 
 ## Serve documentation
 Serves the documentation locally using mkdocs.
