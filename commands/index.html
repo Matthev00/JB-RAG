@@ -347,6 +347,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#have-fun-with-code-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Have fun with CODE RAG
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#replicate-experiment" class="md-nav__link">
     <span class="md-ellipsis">
       Replicate Experiment
@@ -602,6 +611,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#have-fun-with-code-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Have fun with CODE RAG
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#replicate-experiment" class="md-nav__link">
     <span class="md-ellipsis">
       Replicate Experiment
@@ -658,9 +676,13 @@
 <pre><code class="language-sh">make create_environment
 </code></pre>
 <h2 id="install-python-dependencies">Install Python Dependencies</h2>
-<p>Installs the required Python dependencies listed in <code>requirements.txt</code>.</p>
+<p><strong>Option A – Basic setup (no LLM)</strong></p>
 <pre><code class="language-sh">make requirements
 </code></pre>
+<p><strong>Option B – Full setup with LLM</strong></p>
+<pre><code class="language-sh">make requirements-llm
+</code></pre>
+<p>This will also download the model defined in src/config.py (e.g. tiiuae/falcon-7b-instruct). This might take some time depending on your internet speed. You only need this if you want to use full LLM features like query explanations. If you're only interested in path-based retrieval or running evaluations — you can skip this step and just run make requirements.</p>
 <h2 id="delete-all-compiled-python-files">Delete all compiled Python files</h2>
 <p>Deletes all compiled Python files (<em>.pyc, </em>.pyo) and <strong>pycache</strong> directories.</p>
 <pre><code class="language-sh">make clean
@@ -675,6 +697,9 @@
 </code></pre>
 <h2 id="prepare-knowladge-base">Prepare Knowladge Base</h2>
 <pre><code class="language-sh">make prepare_kb
+</code></pre>
+<h2 id="have-fun-with-code-rag">Have fun with CODE RAG</h2>
+<pre><code class="language-sh">streamlit run src/main.py --server.fileWatcherType=none
 </code></pre>
 <h2 id="replicate-experiment">Replicate Experiment</h2>
 <p>Evaluate on validation data

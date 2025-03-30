@@ -1723,14 +1723,22 @@
 <span class="normal">66</span>
 <span class="normal">67</span>
 <span class="normal">68</span>
-<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Script for running Query Expansion experiments.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">set_seeds</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 
     <span class="n">dataset</span> <span class="o">=</span> <span class="n">RAGDataset</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/escrcpy_val.json&quot;</span><span class="p">))</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_query_expansion</span><span class="p">(</span><span class="n">expand_query_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retriever_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">trial_number</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate_query_expansion</span><span class="p">(</span>
+        <span class="n">expand_query_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">retriever_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">trial_number</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluates the system with a specific Query Expansion type.</span>
 
@@ -1760,7 +1768,12 @@
             <span class="p">{</span>
                 <span class="s2">&quot;expand_query_type&quot;</span><span class="p">:</span> <span class="n">expand_query_type</span><span class="p">,</span>
                 <span class="s2">&quot;latency&quot;</span><span class="p">:</span> <span class="n">latency</span><span class="p">,</span>
-                <span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="n">retriever_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;radius&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;query_top_k&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">retriever_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query_top_k&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">expand_query_type</span> <span class="o">==</span> <span class="s2">&quot;candidate_terms&quot;</span>
+                    <span class="k">else</span> <span class="kc">None</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">retriever_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;radius&quot;</span><span class="p">)),</span>
                 <span class="s2">&quot;Precision@10&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;Precision@10&quot;</span><span class="p">],</span>
                 <span class="s2">&quot;Recall@10&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;Recall@10&quot;</span><span class="p">],</span>
                 <span class="s2">&quot;F1@10&quot;</span><span class="p">:</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;F1@10&quot;</span><span class="p">],</span>
@@ -1770,10 +1783,7 @@
         <span class="k">return</span> <span class="n">results</span>
 
     <span class="n">query_expansion_types</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;candidate_terms&quot;</span><span class="p">,</span> <span class="s2">&quot;wordnet&quot;</span><span class="p">]</span>
-    <span class="n">retriever_configs</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">,</span> <span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;radius&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span> <span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">},</span>
-    <span class="p">]</span>
+    <span class="n">retriever_configs</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;top_k&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span> <span class="s2">&quot;query_top_k&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
     <span class="n">trial_number</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">for</span> <span class="n">expand_query_type</span> <span class="ow">in</span> <span class="n">query_expansion_types</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">retriever_params</span> <span class="ow">in</span> <span class="n">retriever_configs</span><span class="p">:</span>

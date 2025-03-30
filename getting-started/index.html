@@ -550,8 +550,13 @@
 <p>Before starting with the project, make sure you have installed all the required dependencies. You can do this by running the following command:</p>
 <pre><code class="language-sh">make create_environment
 </code></pre>
+<p><strong>Option A – Basic setup (no LLM)</strong></p>
 <pre><code class="language-sh">make requirements
 </code></pre>
+<p><strong>Option B – Full setup with LLM</strong></p>
+<pre><code class="language-sh">make requirements-llm
+</code></pre>
+<p>This will also download the model defined in src/config.py (e.g. tiiuae/falcon-7b-instruct). This might take some time depending on your internet speed. You only need this if you want to use full LLM features like query explanations. If you're only interested in path-based retrieval or running evaluations — you can skip this step and just run <code>make requirements</code>.</p>
 <h2 id="step-1-prepare-knowladge-base">Step 1: Prepare Knowladge Base</h2>
 <pre><code class="language-sh">make prepare_kb
 </code></pre>
