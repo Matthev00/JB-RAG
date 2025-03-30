@@ -570,9 +570,9 @@
 <h1 id="code-rag-documentation">CODE RAG documentation!</h1>
 <h2 id="description">Description</h2>
 <p>Retrieval-Augmented Generation (RAG) system over a code repository for a question-answering task.</p>
-<p>Users can use the system for question answering over the repository:
-- <strong>Input</strong>: Natural language query (question).
-- <strong>Output</strong>: Relevant code locations (files).</p>
+<p>Users can use the system for question answering over the repository:<br />
+- <strong>Input</strong>: Natural language query (question).<br />
+- <strong>Output</strong>: Relevant code locations (files).  </p>
 <h3 id="system">System</h3>
 <p>Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights &amp; Biases.</p>
 <h4 id="llm-summaries">LLM summaries</h4>
