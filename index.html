@@ -255,6 +255,36 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system" class="md-nav__link">
+    <span class="md-ellipsis">
+      System
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#llm-summaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM summaries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -480,6 +510,36 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system" class="md-nav__link">
+    <span class="md-ellipsis">
+      System
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#llm-summaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM summaries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -510,6 +570,14 @@
 <h1 id="code-rag-documentation">CODE RAG documentation!</h1>
 <h2 id="description">Description</h2>
 <p>Retrieval-Augmented Generation (RAG) system over a code repository for a question-answering task.</p>
+<p>Users can use the system for question answering over the repository:
+- <strong>Input</strong>: Natural language query (question).
+- <strong>Output</strong>: Relevant code locations (files).</p>
+<h3 id="system">System</h3>
+<p>Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights &amp; Biases.</p>
+<h4 id="llm-summaries">LLM summaries</h4>
+<p>To further enhance user experience, I integrated a local LLM (Large Language Model) to generate natural language summaries of the retrieved results. This feature is available in the web interface and can be optionally enabled using a checkbox.</p>
+<p>The specific LLM model and device configuration can be easily adjusted in the <code>src/config.py</code> file via the <code>SUMMARY_MODEL</code> and <code>DEVICE</code> variables.</p>
 <h2 id="commands">Commands</h2>
 <p>The Makefile contains the central entry points for common tasks related to this project.</p>
 
