@@ -5,13 +5,25 @@
 
 Retrieval-Augmented Generation (RAG) system over a code repository for a question-answering task.
 
-Users can use the system for question answering over the repository:
-- **Input**: Natural language query (question).
-- **Output**: Relevant code locations (files).
+Users can use the system for question answering over the repository:  
+- **Input**: Natural language query (question).  
+- **Output**: Relevant code locations (files).  
 
 ### System 
 
 Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights & Biases.
+
+#### LLM summaries
+#### 🤖 LLM Summaries
+
+To further enhance user experience, I integrated a local LLM (Large Language Model) to generate natural language summaries of the retrieved results. This feature is available in the web interface and can be optionally enabled using a checkbox.
+
+The specific LLM model and device configuration can be easily adjusted in the `src/config.py` file via the `SUMMARY_MODEL` and `DEVICE` variables.
+
+By default, the system uses a very lightweight local model (`TinyLlama`) due to hardware limitations. While this allows local inference even on CPUs, the summary quality may vary. You are encouraged to replace it with another LLaMA-style instruction-tuned model (e.g., `LLaMA 2`, `Mistral`, etc.) if better performance is desired.
+
+Alternatively, you can switch to using the **OpenAI API** by enabling `USE_OPENAI = True` in the configuration. This allows the system to generate high-quality summaries using models like `gpt-3.5-turbo` or `gpt-4`, depending on your API access.
+
 
 The code documentation is generated using MkDocs and hosted on [GitHub Pages](https://matthev00.github.io/JB-RAG/).
 
@@ -33,24 +45,21 @@ I will continue my experiments using the model with the highest Recall@10, as th
 #### Adding expand Query
 The system implements Query Expansion to enhance the quality of search results by enriching the user's query with additional related terms. Two approaches to Query Expansion are supported:
 1. **Static Candidate Terms**:
-   - A predefined list of candidate terms is used to expand the query. These terms cover a wide range of topics, such as programming concepts (e.g., "function", "class"), user interface elements (e.g., "button", "dialog"), and system-related terms (e.g., "network", "configuration"). The system calculates the semantic similarity between the query and these candidate terms using a SentenceTransformer model and selects the most relevant terms to expand the query.
+   - A predefined list of candidate terms is used to expand the query. The system calculates the semantic similarity between the query and these candidate terms using a SentenceTransformer model and selects the most relevant terms to expand the query.
 
 2. **WordNet-based Expansion**:
-   - This approach uses the WordNet lexical database to find synonyms and related terms for words in the query. It dynamically generates expanded queries by including these related terms, which can improve recall for queries with synonyms or alternative phrasings.
+   - This approach uses the WordNet lexical database to find synonyms and related terms for words in the query.
 
-**Results**
+**Results - latency/quality trade-offs**  
 The addition of Query Expansion based on static candidate terms resulted in a very slight improvement in recall, increasing it from **0.50343** to **0.50833**. However, this improvement came at a significant cost in terms of latency, which increased by approximately **3 times**.
 
 **Conclusions**
 
 1. **When to Use Query Expansion**:
-   - Query Expansion based on static candidate terms may be beneficial in scenarios where **recall is critical**, and even a small improvement in recall can justify the additional latency. For example:
-     - When the system is used for exploratory searches where missing relevant results is unacceptable.
-     - In use cases where the dataset is sparse, and expanding the query helps retrieve more relevant results.
+   - Query Expansion based on static candidate terms may be beneficial in scenarios where **recall is critical**, and even a small improvement in recall can justify the additional latency
 
 2. **When to Avoid Query Expansion**:
-   - If **latency is a critical factor**, such as in real-time systems or applications where users expect instant responses, Query Expansion may not be suitable.
-   - If the slight improvement in recall does not outweigh the increased computational cost, it is better to rely on the original query without expansion.
+   - If **latency is a critical factor**, such as in real-time systems.
 
 3. **Trade-offs**:
    - The decision to use Query Expansion should be based on the specific requirements of the application. For systems prioritizing **quality over speed**, Query Expansion can be a valuable addition. However, for systems where **speed is paramount**, it is better to avoid it.
@@ -83,9 +92,33 @@ Before starting with the project, make sure you have installed all the required 
 make create_environment
 ```
 
+**Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
+
+**Option B – Full setup with LLM**
+```sh
+make requirements-llm
+```
+By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
+
+#### ▶️ Using OpenAI API
+
+To enable OpenAI-based summaries:
+
+1. Create a `.env` file in the project root directory.
+2. Add your API key:
+   ```env
+   OPENAI_API_KEY=your-api-key-here
+3. Make sure you have billing enabled on platform.openai.com to avoid quota issues.
+
+#### ▶️ Using a Local Model
+If you prefer to use a local LLM instead of the OpenAI API:
+1. open `config.py`
+2. set `USE_OPENAI = False`
+3. Optionally configure `SUMMARY_MODEL` and `DEVICE`
+**Note: On first use, the model will be downloaded from Hugging Face. This may take a few minutes depending on your internet speed**
 
 ---
 
@@ -134,8 +167,8 @@ This will launch a web-based interface where you can interact with the system. O
    - The results will be displayed as a list of file paths. Each result corresponds to a code chunk that matches your query.
 
 ## Evaluate model
-1. Download file from [here](https://drive.google.com/file/d/1PiiordcQJwgv4MfT1vl-Omn8DeCdlAB3/view)
-2. Run `make evaluate`.
+
+1. Run `make evaluate`.
 
 ### Reproduce experiments
 

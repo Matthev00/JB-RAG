@@ -49,3 +49,7 @@ LANGUAGE_PATTERNS = {
 
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+SUMMARY_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+DEVICE = "cpu"
+USE_OPENAI = False
+OPENAI_MODEL = "gpt-4o-2024-08-06"

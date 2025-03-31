@@ -22,5 +22,14 @@ dependencies = [
     "wandb>=0.19.8",
 ]
 
+[project.optional-dependencies]
+llm = [
+    "transformers>=4.49.0",
+    "bitsandbytes>=0.45.4",
+    "accelerate>=1.5.2",
+    "openai>=1.69.0",
+    "dotenv>=0.9.9",
+]
+
 [flake8]
 max-line-length = 100

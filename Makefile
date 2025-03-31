@@ -18,7 +18,10 @@ requirements:
 	uv run python -m nltk.downloader wordnet
 #	$(PYTHON_INTERPRETER) -m pip install -U pip
 #	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-	
+
+## Install Python Dependencies with LLM Dependencies
+requirements-llm:
+	uv pip install -e .[llm]
 
 ## Delete all compiled Python files
 .PHONY: clean

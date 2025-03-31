@@ -8,11 +8,34 @@ make create_environment
 
 ## Install Python Dependencies
 
-Installs the required Python dependencies listed in `requirements.txt`.
-
+**Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
+
+**Option B – Full setup with LLM**
+```sh
+make requirements-llm
+```
+By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
+
+#### ▶️ Using OpenAI API
+
+To enable OpenAI-based summaries:
+
+1. Create a `.env` file in the project root directory.
+2. Add your API key:
+   ```env
+   OPENAI_API_KEY=your-api-key-here
+3. Make sure you have billing enabled on platform.openai.com to avoid quota issues.
+
+#### ▶️ Using a Local Model
+If you prefer to use a local LLM instead of the OpenAI API:
+1. open `config.py`
+2. set `USE_OPENAI = False`
+3. Optionally configure `SUMMARY_MODEL` and `DEVICE`
+**Note: On first use, the model will be downloaded from Hugging Face. This may take a few minutes depending on your internet speed**
+
 
 ## Delete all compiled Python files
 Deletes all compiled Python files (*.pyc, *.pyo) and __pycache__ directories.

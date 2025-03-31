@@ -8,9 +8,17 @@ Before starting with the project, make sure you have installed all the required 
 make create_environment
 ```
 
+**Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
+
+**Option B – Full setup with LLM**
+```sh
+make requirements-llm
+```
+This will also download the model defined in src/config.py (e.g. tiiuae/falcon-7b-instruct). This might take some time depending on your internet speed. You only need this if you want to use full LLM features like query explanations. If you're only interested in path-based retrieval or running evaluations — you can skip this step and just run `make requirements`.
+
 
 ## Step 1: Prepare Knowladge Base
 
