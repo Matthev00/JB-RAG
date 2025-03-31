@@ -103,22 +103,3 @@ else:
         ]["generated_text"]
         answer = response[len(prompt) :].strip()
         return answer
-
-
-if __name__ == "__main__":
-    results = [
-        {
-            "path": "/home/mateusz/JB-RAG/data/repos/escrcpy/electron/resources/extra/mac/android-platform-tools/NOTICE.txt",
-            "relative_path": "electron/resources/extra/mac/android-platform-tools/NOTICE.txt",
-            "file_type": "other",
-            "language": "Unknown",
-            "chunk_id": 329,
-            "code": "    in the event an application does not supply such function or\n",
-            "start_line": 7699,
-            "end_line": 7809,
-        },
-    ]
-
-    output = generate_summary("whats up?", results)
-    print(50 * "-")
-    print(output)
