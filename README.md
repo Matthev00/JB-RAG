@@ -135,7 +135,7 @@ This will download the repository specified in `src/config.py` as `REPO_URL`(thi
 run
 
 ```sh
-streamlit run src/main.py --server.fileWatcherType=none
+uv run streamlit run src/main.py --server.fileWatcherType=none
 ```
 **Default values are, in my opinion, the best based on the reports.**  
 This will launch a web-based interface where you can interact with the system. Open the provided URL in your browser (e.g., http://localhost:8501).
