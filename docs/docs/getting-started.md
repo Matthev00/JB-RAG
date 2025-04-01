@@ -17,7 +17,26 @@ make requirements
 ```sh
 make requirements-llm
 ```
-This will also download the model defined in src/config.py (e.g. tiiuae/falcon-7b-instruct). This might take some time depending on your internet speed. You only need this if you want to use full LLM features like query explanations. If you're only interested in path-based retrieval or running evaluations — you can skip this step and just run `make requirements`.
+By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
+
+#### ▶️ Using Azure OpenAI API
+
+To enable Azure OpenAI-based summaries:
+
+1. Create a `.env` file in the project root directory.
+2. Add your Azure OpenAI credentials:
+   ```env
+   AZURE_OPENAI_KEY=your-api-key-here
+   AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+   AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name
+3. Make sure you have billing enabled
+
+#### ▶️ Using a Local Model
+If you prefer to use a local LLM instead of the OpenAI API:
+1. open `config.py`
+2. set `USE_OPENAI = False`
+3. Optionally configure `SUMMARY_MODEL` and `DEVICE`
+**Note: On first use, the model will be downloaded from Hugging Face. This may take a few minutes depending on your internet speed**
 
 
 ## Step 1: Prepare Knowladge Base

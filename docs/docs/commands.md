@@ -8,7 +8,7 @@ make create_environment
 
 ## Install Python Dependencies
 
-**Option A – Basic setup (no LLM)**
+*Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
@@ -19,15 +19,17 @@ make requirements-llm
 ```
 By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
 
-#### ▶️ Using OpenAI API
+#### ▶️ Using Azure OpenAI API
 
-To enable OpenAI-based summaries:
+To enable Azure OpenAI-based summaries:
 
 1. Create a `.env` file in the project root directory.
-2. Add your API key:
+2. Add your Azure OpenAI credentials:
    ```env
-   OPENAI_API_KEY=your-api-key-here
-3. Make sure you have billing enabled on platform.openai.com to avoid quota issues.
+   AZURE_OPENAI_KEY=your-api-key-here
+   AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+   AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name
+3. Make sure you have billing enabled
 
 #### ▶️ Using a Local Model
 If you prefer to use a local LLM instead of the OpenAI API:

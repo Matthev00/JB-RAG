@@ -14,13 +14,10 @@ Users can use the system for question answering over the repository:
 Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights & Biases.
 
 #### LLM summaries
-#### 🤖 LLM Summaries
-
-### 🔍 Summary Generation with LLM
 
 To enhance the user experience, the system integrates an LLM (Large Language Model) to generate natural language summaries of retrieved results. This feature is available in the web interface and is **enabled by default using Azure OpenAI** (e.g., `gpt-3.5-turbo`).
 
-#### ⚙️ Configuration
+##### Configuration
 
 You can configure the behavior in `src/config.py`:
 
@@ -30,7 +27,7 @@ You can configure the behavior in `src/config.py`:
 - `USE_OPENAI = False`  
   Switches to a **local lightweight model** (e.g., `TinyLlama`) for offline inference.
 
-#### 🧠 Local Model Settings
+##### 🧠 Local Model Settings
 
 When using a local model, the following config variables apply:
 
