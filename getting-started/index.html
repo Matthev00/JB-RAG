@@ -278,6 +278,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-azure-openai-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      ▶️ Using Azure OpenAI API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-a-local-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      ▶️ Using a Local Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -500,6 +524,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-azure-openai-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      ▶️ Using Azure OpenAI API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-a-local-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      ▶️ Using a Local Model
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -556,7 +604,24 @@
 <p><strong>Option B – Full setup with LLM</strong></p>
 <pre><code class="language-sh">make requirements-llm
 </code></pre>
-<p>This will also download the model defined in src/config.py (e.g. tiiuae/falcon-7b-instruct). This might take some time depending on your internet speed. You only need this if you want to use full LLM features like query explanations. If you're only interested in path-based retrieval or running evaluations — you can skip this step and just run <code>make requirements</code>.</p>
+<p>By default, the system uses the <strong>OpenAI API</strong> to generate natural language summaries of retrieved code files.</p>
+<h4 id="using-azure-openai-api">▶️ Using Azure OpenAI API</h4>
+<p>To enable Azure OpenAI-based summaries:</p>
+<ol>
+<li>Create a <code>.env</code> file in the project root directory.</li>
+<li>Add your Azure OpenAI credentials:
+   ```env
+   AZURE_OPENAI_KEY=your-api-key-here
+   AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+   AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name</li>
+<li>Make sure you have billing enabled</li>
+</ol>
+<h4 id="using-a-local-model">▶️ Using a Local Model</h4>
+<p>If you prefer to use a local LLM instead of the OpenAI API:
+1. open <code>config.py</code>
+2. set <code>USE_OPENAI = False</code>
+3. Optionally configure <code>SUMMARY_MODEL</code> and <code>DEVICE</code>
+<strong>Note: On first use, the model will be downloaded from Hugging Face. This may take a few minutes depending on your internet speed</strong></p>
 <h2 id="step-1-prepare-knowladge-base">Step 1: Prepare Knowladge Base</h2>
 <pre><code class="language-sh">make prepare_kb
 </code></pre>

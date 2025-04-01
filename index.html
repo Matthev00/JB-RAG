@@ -275,6 +275,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="LLM summaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-model-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧠 Local Model Settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -530,6 +554,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="LLM summaries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-model-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      🧠 Local Model Settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -576,8 +624,33 @@
 <h3 id="system">System</h3>
 <p>Code is parsed into chunks using a custom CodeParser, and embeddings are generated with a SentenceTransformer model. The FAISS index enables fast similarity-based searches, supporting both radius-based and top-k retrieval methods. The system is designed to be modular, allowing easy customization of embedding models and repositories, while ensuring reproducibility through experiment tracking with Optuna and Weights &amp; Biases.</p>
 <h4 id="llm-summaries">LLM summaries</h4>
-<p>To further enhance user experience, I integrated a local LLM (Large Language Model) to generate natural language summaries of the retrieved results. This feature is available in the web interface and can be optionally enabled using a checkbox.</p>
-<p>The specific LLM model and device configuration can be easily adjusted in the <code>src/config.py</code> file via the <code>SUMMARY_MODEL</code> and <code>DEVICE</code> variables.</p>
+<p>To enhance the user experience, the system integrates an LLM (Large Language Model) to generate natural language summaries of retrieved results. This feature is available in the web interface and is <strong>enabled by default using Azure OpenAI</strong> (e.g., <code>gpt-3.5-turbo</code>).</p>
+<h5 id="configuration">Configuration</h5>
+<p>You can configure the behavior in <code>src/config.py</code>:</p>
+<ul>
+<li>
+<p><code>USE_OPENAI = True</code> <em>(default)</em><br />
+  Uses <strong>Azure OpenAI API</strong> for high-quality summaries.</p>
+</li>
+<li>
+<p><code>USE_OPENAI = False</code><br />
+  Switches to a <strong>local lightweight model</strong> (e.g., <code>TinyLlama</code>) for offline inference.</p>
+</li>
+</ul>
+<h5 id="local-model-settings">🧠 Local Model Settings</h5>
+<p>When using a local model, the following config variables apply:</p>
+<ul>
+<li><code>SUMMARY_MODEL</code> – name or path to the model (e.g., <code>"TinyLlama"</code> or <code>"TheBloke/Mistral-7B-Instruct-GGUF"</code>)</li>
+<li><code>DEVICE</code> – hardware device (e.g., <code>"cpu"</code>, <code>"cuda"</code>, or <code>"mps"</code>)</li>
+</ul>
+<p>The default local model is <code>TinyLlama</code>, allowing for CPU-friendly inference. However, you can replace it with any instruction-tuned LLaMA-style model (e.g., <code>LLaMA 2</code>, <code>Mistral</code>, etc.) for better summary quality.</p>
+<hr />
+<p><strong>Note</strong> This project uses <strong>Azure OpenAI</strong> by default, as I have access to it through the <a href="https://azure.microsoft.com/free/students/">Azure for Students</a> program, which provides free credits for cloud services. <br />
+💡 <strong>Note:</strong> To use Azure OpenAI, make sure your <code>.env</code> file contains:</p>
+<p>```env
+AZURE_OPENAI_KEY=your_api_key
+AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+AZURE_OPENA</p>
 <h2 id="commands">Commands</h2>
 <p>The Makefile contains the central entry points for common tasks related to this project.</p>
 
