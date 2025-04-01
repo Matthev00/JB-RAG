@@ -16,13 +16,38 @@ Code is parsed into chunks using a custom CodeParser, and embeddings are generat
 #### LLM summaries
 #### 🤖 LLM Summaries
 
-To further enhance user experience, I integrated a local LLM (Large Language Model) to generate natural language summaries of the retrieved results. This feature is available in the web interface and can be optionally enabled using a checkbox.
+### 🔍 Summary Generation with LLM
 
-The specific LLM model and device configuration can be easily adjusted in the `src/config.py` file via the `SUMMARY_MODEL` and `DEVICE` variables.
+To enhance the user experience, the system integrates an LLM (Large Language Model) to generate natural language summaries of retrieved results. This feature is available in the web interface and is **enabled by default using Azure OpenAI** (e.g., `gpt-3.5-turbo`).
 
-By default, the system uses a very lightweight local model (`TinyLlama`) due to hardware limitations. While this allows local inference even on CPUs, the summary quality may vary. You are encouraged to replace it with another LLaMA-style instruction-tuned model (e.g., `LLaMA 2`, `Mistral`, etc.) if better performance is desired.
+#### ⚙️ Configuration
 
-Alternatively, you can switch to using the **OpenAI API** by enabling `USE_OPENAI = True` in the configuration. This allows the system to generate high-quality summaries using models like `gpt-3.5-turbo` or `gpt-4`, depending on your API access.
+You can configure the behavior in `src/config.py`:
+
+- `USE_OPENAI = True` *(default)*  
+  Uses **Azure OpenAI API** for high-quality summaries.
+
+- `USE_OPENAI = False`  
+  Switches to a **local lightweight model** (e.g., `TinyLlama`) for offline inference.
+
+#### 🧠 Local Model Settings
+
+When using a local model, the following config variables apply:
+
+- `SUMMARY_MODEL` – name or path to the model (e.g., `"TinyLlama"` or `"TheBloke/Mistral-7B-Instruct-GGUF"`)
+- `DEVICE` – hardware device (e.g., `"cpu"`, `"cuda"`, or `"mps"`)
+
+The default local model is `TinyLlama`, allowing for CPU-friendly inference. However, you can replace it with any instruction-tuned LLaMA-style model (e.g., `LLaMA 2`, `Mistral`, etc.) for better summary quality.
+
+---
+   **Note** This project uses **Azure OpenAI** by default, as I have access to it through the [Azure for Students](https://azure.microsoft.com/free/students/) program, which provides free credits for cloud services.   
+💡 **Note:** To use Azure OpenAI, make sure your `.env` file contains:
+
+```env
+AZURE_OPENAI_KEY=your_api_key
+AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+AZURE_OPENAI_DEPLOYMENT_NAME=your_deployment_name
+```
 
 
 The code documentation is generated using MkDocs and hosted on [GitHub Pages](https://matthev00.github.io/JB-RAG/).
@@ -103,15 +128,17 @@ make requirements-llm
 ```
 By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
 
-#### ▶️ Using OpenAI API
+#### ▶️ Using Azure OpenAI API
 
-To enable OpenAI-based summaries:
+To enable Azure OpenAI-based summaries:
 
 1. Create a `.env` file in the project root directory.
-2. Add your API key:
+2. Add your Azure OpenAI credentials:
    ```env
-   OPENAI_API_KEY=your-api-key-here
-3. Make sure you have billing enabled on platform.openai.com to avoid quota issues.
+   AZURE_OPENAI_KEY=your-api-key-here
+   AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
+   AZURE_OPENAI_DEPLOYMENT_NAME=your-deployment-name
+3. Make sure you have billing enabled
 
 #### ▶️ Using a Local Model
 If you prefer to use a local LLM instead of the OpenAI API:
