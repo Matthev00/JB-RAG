@@ -132,27 +132,37 @@ class QueryExpander:
         )[0]["generated_text"]
         return output.split("<|assistant|>")[1].split("<|end|>")[0].strip()
 
-    @staticmethod
-    def query_with_LLM(query: str) -> str:
+    @classmethod
+    def query_with_LLM(
+        cls,
+        query: str,
+        embedding_model: SentenceTransformer,
+        language: str = "JavaScript",
+    ) -> np.ndarray:
         """
-        Rewrites the query using a large language model (LLM).
-        Use LLM to generate code that could be similar to the original query.
+        Expands the query using LLM, generates a code snippet, computes embeddings for both,
+        and returns a weighted combination.
 
         Args:
-            query (str): Original query.
+            query (str): Original user query.
+            embedding_model (SentenceTransformer): Model used to embed text/code.
+            language (str): Programming language for code generation.
 
         Returns:
-            str: Expanded query.
+            np.ndarray: Combined embedding vector.
         """
+        cls._load_llm()
 
-        return query
+        expanded_query = cls.generate_query_expansion(query)
+        generated_code = cls.generate_code_snippet(query, language)
+
+        query_embed = embedding_model.encode([expanded_query], convert_to_numpy=True)
+        code_embed = embedding_model.encode([generated_code], convert_to_numpy=True)
+
+        combined_embedding = 0.6 * query_embed + 0.4 * code_embed
+        return combined_embedding
 
 
-qe = QueryExpander()
 
 query = "How does the repository handle IPv6 addresses in ADB commands?"
-expanded = qe.generate_query_expansion(query)
-code = qe.generate_code_snippet(query, language="JavaScript")
-
-print("Expanded query:\n", expanded)
-print("\nGenerated code:\n", code)
+expanded_query = QueryExpander.query_with_LLM(query, SentenceTransformer("all-MiniLM-L6-v2"))
