@@ -50,5 +50,6 @@ LANGUAGE_PATTERNS = {
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 SUMMARY_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+QUERY_EXPANDER_MODEL = "deepseek-ai/deepseek-coder-6.7b-instruct"
 DEVICE = "cpu"
 USE_OPENAI = True
