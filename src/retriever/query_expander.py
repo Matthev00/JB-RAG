@@ -61,16 +61,26 @@ class QueryExpander:
         This method checks if the model is already loaded, and if not, it initializes it.
         """
         if cls._llm_model:
-            from transformers import AutoTokenizer, AutoModelForCausalLM, piepeline
+            from transformers import (
+                AutoTokenizer,
+                AutoModelForCausalLM,
+                pipeline,
+                BitsAndBytesConfig,
+            )
             from src.config import QUERY_EXPANDER_MODEL, DEVICE
 
             tokenizer = AutoTokenizer.from_pretrained(
                 QUERY_EXPANDER_MODEL, trust_remote_code=True
             )
+
+            bnb_config = BitsAndBytesConfig(load_in_4bit=True)
             model = AutoModelForCausalLM.from_pretrained(
-                QUERY_EXPANDER_MODEL, trust_remote_code=True, device_map=DEVICE
+                QUERY_EXPANDER_MODEL,
+                quantization_config=bnb_config,
+                trust_remote_code=True,
+                device_map=DEVICE,
             )
-            cls._llm_model = piepeline(
+            cls._llm_model = pipeline(
                 "text-generation",
                 model=model,
                 tokenizer=tokenizer,
