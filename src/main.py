@@ -1,14 +1,8 @@
 import streamlit as st
 
+from src.app_utils.answer_summary import generate_summary
 from src.config import EMBEDDING_MODEL
 from src.retriever.faiss_search import FAISSRetriever
-
-try:
-    from src.app_utils.answer_summary import generate_summary
-
-    LLM_AVAILABLE = True
-except ImportError:
-    LLM_AVAILABLE = False
 
 
 def main():
@@ -90,15 +84,10 @@ def main():
                     st.markdown(f"- **{result['relative_path']}**")
 
                 if use_llm:
-                    if not LLM_AVAILABLE:
-                        st.error(
-                            "LLM dependencies are not installed.\nRun `make requirements-llm` to enable this feature."
-                        )
-                    else:
-                        with st.spinner("Generating explanation with LLM..."):
-                            explanation = generate_summary(query, results)
-                            st.markdown("### 🤖 LLM Explanation")
-                            st.info(explanation)
+                    with st.spinner("Generating explanation with LLM..."):
+                        explanation = generate_summary(query, results)
+                        st.markdown("### 🤖 LLM Explanation")
+                        st.info(explanation)
             else:
                 st.warning("No results found.")
 

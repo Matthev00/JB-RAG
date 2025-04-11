@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from nltk.corpus import wordnet
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -62,20 +63,23 @@ class QueryExpander:
         """
         if cls._llm_model is None:
             from transformers import (
-                AutoTokenizer,
                 AutoModelForCausalLM,
-                pipeline,
+                AutoTokenizer,
                 BitsAndBytesConfig,
+                pipeline,
             )
+
             from src.config import QUERY_EXPANDER_MODEL, DEVICE
 
             tokenizer = AutoTokenizer.from_pretrained(
                 QUERY_EXPANDER_MODEL, trust_remote_code=True
             )
 
-            bnb_config = BitsAndBytesConfig(load_in_4bit=True)
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16
+            )
             model = AutoModelForCausalLM.from_pretrained(
-                QUERY_EXPANDER_MODEL,
+                "deepseek-ai/deepseek-coder-6.7b-instruct",
                 quantization_config=bnb_config,
                 trust_remote_code=True,
                 device_map=DEVICE,
@@ -84,7 +88,6 @@ class QueryExpander:
                 "text-generation",
                 model=model,
                 tokenizer=tokenizer,
-                device=DEVICE,
             )
 
     @classmethod
@@ -100,9 +103,8 @@ class QueryExpander:
         """
         cls._load_llm()
 
-        system_prompt = "You are a helpful query expansion assistant. Your task is to rewrite and expand the user's query for better code search."
-        user_prompt = f"User query: {query}\nRewrite and expand this query for better code search. Be technical and precise."
-        prompt = f"<|system|>\n{system_prompt}\n<|user|>\n{user_prompt}<|end|>\n<|assistant|>"
+        user_prompt = f"Rewrite the query. Query: {query}\n. Be technical and precise. Return only new query nothing else. Do not anwear the question."
+        prompt = f"<|user|>\n{user_prompt}<|end|>\n<|assistant|>"
 
         output = cls._llm_model(
             prompt, max_new_tokens=128, do_sample=True, temperature=0.7
@@ -123,9 +125,8 @@ class QueryExpander:
         """
         cls._load_llm()
 
-        system_prompt = "You are a helpful coding assistant. Always return code only, with no explanation."
-        user_prompt = f"Generate a relevant {language} code snippet that solves the following problem:\n{query}"
-        prompt = f"<|system|>\n{system_prompt}\n<|user|>\n{user_prompt}<|end|>\n<|assistant|>"
+        user_prompt = f"Generate a relevant {language} code snippet that is related to the following question:\n{query}"
+        prompt = f"<|user|>\n{user_prompt}<|end|>\n<|assistant|>"
 
         output = cls._llm_model(
             prompt, max_new_tokens=128, do_sample=True, temperature=0.7
@@ -154,15 +155,10 @@ class QueryExpander:
         cls._load_llm()
 
         expanded_query = cls.generate_query_expansion(query)
-        generated_code = cls.generate_code_snippet(query, language)
+        generated_code = cls.generate_code_snippet(expanded_query, language)
 
         query_embed = embedding_model.encode([expanded_query], convert_to_numpy=True)
         code_embed = embedding_model.encode([generated_code], convert_to_numpy=True)
 
         combined_embedding = 0.6 * query_embed + 0.4 * code_embed
         return combined_embedding
-
-
-
-query = "How does the repository handle IPv6 addresses in ADB commands?"
-expanded_query = QueryExpander.query_with_LLM(query, SentenceTransformer("all-MiniLM-L6-v2"))

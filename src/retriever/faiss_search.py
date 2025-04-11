@@ -38,9 +38,10 @@ class FAISSRetriever:
 
         with metadata_path.open("r", encoding="utf-8") as f:
             self.metadata = json.load(f)
-    
 
-    def expand_query(self, query: str, expand_query_type: str, query_top_k: int) -> np.ndarray:
+    def expand_query(
+        self, query: str, expand_query_type: str, query_top_k: int
+    ) -> np.ndarray:
         """
         Expands the query using the specified method.
 
@@ -66,7 +67,6 @@ class FAISSRetriever:
 
             query_embedding = self.model.encode([query], convert_to_numpy=True)
         return query_embedding
-
 
     def search(
         self,
