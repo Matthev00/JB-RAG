@@ -60,7 +60,7 @@ class QueryExpander:
         Loads the large language model (LLM) for query expansion.
         This method checks if the model is already loaded, and if not, it initializes it.
         """
-        if cls._llm_model:
+        if cls._llm_model is None:
             from transformers import (
                 AutoTokenizer,
                 AutoModelForCausalLM,
