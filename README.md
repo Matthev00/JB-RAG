@@ -119,12 +119,6 @@ make create_environment
 make requirements
 ```
 
-**Option B – Full setup with LLM**
-```sh
-make requirements-llm
-```
-By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
-
 #### ▶️ Using Azure OpenAI API
 
 To enable Azure OpenAI-based summaries:
