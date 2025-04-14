@@ -63,11 +63,23 @@ def main():
 
         return results
 
-    query_expansion_types = [None, "candidate_terms", "wordnet"]
-    retriever_configs = [{"top_k": 11, "query_top_k": i} for i in range(20)]
+    query_expansion_types = [None, "candidate_terms", "wordnet", "llm_generated"]
+
+    retriever_configs = [
+        {"top_k": 11},
+        {"radius": 0.26},
+    ]
+    candidate_terms_params = {"query_top_k": 7}
+    llm_params = {"language": "JavaScript"}
+
     trial_number = 1
     for expand_query_type in query_expansion_types:
         for retriever_params in retriever_configs:
+            if expand_query_type == "candidate_terms":
+                retriever_params.update(candidate_terms_params)
+            elif expand_query_type == "llm_generated":
+                retriever_params.update(llm_params)
+
             evaluate_query_expansion(expand_query_type, retriever_params, trial_number)
             trial_number += 1
 
