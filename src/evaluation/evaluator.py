@@ -1,6 +1,5 @@
-from pathlib import Path
+from tqdm import tqdm
 
-from src.config import EMBEDDING_MODEL
 from src.evaluation.dataset import RAGDataset
 from src.retriever.faiss_search import FAISSRetriever
 
@@ -24,7 +23,7 @@ class RAGEvaluator:
         f1_scores = []
         mrr_scores = []
 
-        for question, expected_files in dataset:
+        for question, expected_files in tqdm(dataset):
             results = retriever.search(question, **retriever_params)
             top_10_results = results[:10]
             retrieved_files = set([res["relative_path"] for res in top_10_results])

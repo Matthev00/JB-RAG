@@ -1,8 +1,10 @@
 import json
+
 from src.config import USE_OPENAI
 
 if USE_OPENAI:
     import os
+
     from dotenv import load_dotenv
     from openai import AzureOpenAI
 
@@ -48,7 +50,7 @@ if USE_OPENAI:
         client = AzureOpenAI(
             api_key=os.getenv("AZURE_OPENAI_KEY"),
             api_version="2023-03-15-preview",
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
         )
 
         response = client.chat.completions.create(
@@ -66,6 +68,7 @@ if USE_OPENAI:
 else:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+
     from src.config import DEVICE, SUMMARY_MODEL
 
     def format_prompt(query: str, results: list[dict]) -> str:
@@ -136,11 +139,7 @@ else:
         model = load_model()
 
         response = model(
-            prompt,
-            max_new_tokens=150,
-            do_sample=True,
-            temperature=0.5,
-            truncation=True
+            prompt, max_new_tokens=150, do_sample=True, temperature=0.5, truncation=True
         )[0]["generated_text"]
 
-        return response[len(prompt):].strip()
+        return response[len(prompt) :].strip()

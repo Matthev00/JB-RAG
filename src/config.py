@@ -50,6 +50,6 @@ LANGUAGE_PATTERNS = {
 
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 SUMMARY_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
-QUERY_EXPANDER_MODEL = "bigcode/starcoder2-7b"
+QUERY_EXPANDER_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 DEVICE = "cpu"
 USE_OPENAI = True

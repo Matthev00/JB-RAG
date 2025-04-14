@@ -1,15 +1,17 @@
 import numpy as np
-import torch
+from dotenv import load_dotenv
 from nltk.corpus import wordnet
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from together import Together
 
+from src.config import QUERY_EXPANDER_MODEL
 from src.retriever.candidate_terms import candidate_terms
+
+load_dotenv()
 
 
 class QueryExpander:
-    _llm_model = None
-
     @staticmethod
     def expand_query_with_embeddings(
         query: str, model: SentenceTransformer, top_k: int = 5
@@ -55,110 +57,99 @@ class QueryExpander:
 
         return query + " " + " ".join(set(expanded_terms))
 
-    @classmethod
-    def _load_llm(cls):
+    @staticmethod
+    def expand_query_with_together_api(query: str) -> str:
         """
-        Loads the large language model (LLM) for query expansion.
-        This method checks if the model is already loaded, and if not, it initializes it.
-        """
-        if cls._llm_model is None:
-            from transformers import (
-                AutoModelForCausalLM,
-                AutoTokenizer,
-                BitsAndBytesConfig,
-                pipeline,
-            )
-
-            from src.config import QUERY_EXPANDER_MODEL, DEVICE
-
-            tokenizer = AutoTokenizer.from_pretrained(
-                QUERY_EXPANDER_MODEL, trust_remote_code=True
-            )
-
-            bnb_config = BitsAndBytesConfig(
-                load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16
-            )
-            model = AutoModelForCausalLM.from_pretrained(
-                "deepseek-ai/deepseek-coder-6.7b-instruct",
-                quantization_config=bnb_config,
-                trust_remote_code=True,
-                device_map=DEVICE,
-            )
-            cls._llm_model = pipeline(
-                "text-generation",
-                model=model,
-                tokenizer=tokenizer,
-            )
-
-    @classmethod
-    def generate_query_expansion(cls, query: str) -> str:
-        """
-        Generates an expanded query using a LLM.
+        Expands the query using Together AI API.
 
         Args:
             query (str): Original query.
 
         Returns:
-            str: Rewrited query.
+            str: Expanded query.
         """
-        cls._load_llm()
+        load_dotenv()
+        client = Together()
+        response = client.chat.completions.create(
+            model=QUERY_EXPANDER_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant, who helps to expand queries for better search results. Always return only the expanded query.",
+                },
+                {
+                    "role": "user",
+                    "content": f"Rewrite the query to make it more technical and precise: {query}. Return only new query nothing else.",
+                },
+            ],
+        )
 
-        user_prompt = f"Rewrite the query. Query: {query}\n. Be technical and precise. Return only new query nothing else. Do not anwear the question."
-        prompt = f"<|user|>\n{user_prompt}<|end|>\n<|assistant|>"
+        return response.choices[0].message.content
 
-        output = cls._llm_model(
-            prompt, max_new_tokens=128, do_sample=True, temperature=0.7
-        )[0]["generated_text"]
-        return output.split("<|assistant|>")[1].split("<|end|>")[0].strip()
-
-    @classmethod
-    def generate_code_snippet(cls, query: str, language: str = "JavaScript") -> str:
+    @staticmethod
+    def generate_code_snippet_with_together_api(
+        query: str, language: str = "JavaScript"
+    ) -> str:
         """
-        Generates a code snippet using a LLM.
+        Generates a code snippet using Together AI API.
 
         Args:
-            query (str): Original query.
+            query (str): Expanded query.
             language (str): Programming language for the code snippet.
 
         Returns:
             str: Generated code snippet.
         """
-        cls._load_llm()
+        load_dotenv()
+        client = Together()
+        response = client.chat.completions.create(
+            model=QUERY_EXPANDER_MODEL,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a helpful assistant, who writes code. Always return only the code snippet nothing else.",
+                },
+                {
+                    "role": "user",
+                    "content": f"Generate a relevant {language} code snippet for the following query: {query}. Return only the code snippet nothing else.",
+                },
+            ],
+        )
 
-        user_prompt = f"Generate a relevant {language} code snippet that is related to the following question:\n{query}"
-        prompt = f"<|user|>\n{user_prompt}<|end|>\n<|assistant|>"
+        return response.choices[0].message.content
 
-        output = cls._llm_model(
-            prompt, max_new_tokens=128, do_sample=True, temperature=0.7
-        )[0]["generated_text"]
-        return output.split("<|assistant|>")[1].split("<|end|>")[0].strip()
-
-    @classmethod
+    @staticmethod
     def query_with_LLM(
-        cls,
-        query: str,
-        embedding_model: SentenceTransformer,
-        language: str = "JavaScript",
+        query: str, model: SentenceTransformer, language: str = "JavaScript"
     ) -> np.ndarray:
         """
-        Expands the query using LLM, generates a code snippet, computes embeddings for both,
+        Expands the query using Together AI, generates a code snippet, computes embeddings for both,
         and returns a weighted combination.
 
         Args:
             query (str): Original user query.
-            embedding_model (SentenceTransformer): Model used to embed text/code.
+            model (SentenceTransformer): Model used to embed text/code.
             language (str): Programming language for code generation.
 
         Returns:
             np.ndarray: Combined embedding vector.
         """
-        cls._load_llm()
+        expanded_query = QueryExpander.expand_query_with_together_api(query)
+        generated_code = QueryExpander.generate_code_snippet_with_together_api(
+            expanded_query, language
+        )
 
-        expanded_query = cls.generate_query_expansion(query)
-        generated_code = cls.generate_code_snippet(expanded_query, language)
-
-        query_embed = embedding_model.encode([expanded_query], convert_to_numpy=True)
-        code_embed = embedding_model.encode([generated_code], convert_to_numpy=True)
+        query_embed = model.encode([expanded_query], convert_to_numpy=True)
+        code_embed = model.encode([generated_code], convert_to_numpy=True)
 
         combined_embedding = 0.6 * query_embed + 0.4 * code_embed
         return combined_embedding
+
+
+if __name__ == "__main__":
+    # Example usage
+    model = SentenceTransformer("all-MiniLM-L6-v2")
+    query = "How to use FAISS for similarity search?"
+    expanded_query = QueryExpander.query_with_together_api(query, model)
+
+    print("Expanded Query:", expanded_query)
