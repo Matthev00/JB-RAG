@@ -1,3 +1,6 @@
+from collections import Counter
+from pathlib import Path
+
 import numpy as np
 from dotenv import load_dotenv
 from nltk.corpus import wordnet
@@ -5,7 +8,8 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from together import Together
 
-from src.config import QUERY_EXPANDER_MODEL
+from src.config import PROJECT_NAME, QUERY_EXPANDER_MODEL, REPO_DIR
+from src.preprocessing.code_parser import CodeParser
 from src.retriever.candidate_terms import candidate_terms
 
 load_dotenv()
@@ -107,11 +111,11 @@ class QueryExpander:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a helpful assistant, who writes code. Always return only the code snippet nothing else.",
+                    "content": "You are a helpful assistant, who writes code. Always return only the code snippet nothing else. Keep response short.",
                 },
                 {
                     "role": "user",
-                    "content": f"Generate a relevant {language} code snippet for the following query: {query}. Return only the code snippet nothing else.",
+                    "content": f"Generate a relevant code snippet in {language} for the following query: {query}. Return only the code snippet nothing else.",
                 },
             ],
         )
@@ -119,9 +123,40 @@ class QueryExpander:
         return response.choices[0].message.content
 
     @staticmethod
-    def query_with_LLM(
-        query: str, model: SentenceTransformer, language: str = "JavaScript"
-    ) -> np.ndarray:
+    def detect_language_from_files() -> str:
+        """
+        Detects the programming languages from a list of files.
+        Returns the most common language(s), and includes others if their frequency
+        is within 10% of the most common one.
+
+        Returns:
+            str: Detected programming language(s), e.g. "Python", or "Python and Java".
+        """
+        code_parser = CodeParser(Path(REPO_DIR) / PROJECT_NAME)
+        files = code_parser.get_relevant_files()
+        languages = []
+        for file in files:
+            language = code_parser._detect_language(file)
+            if language:
+                languages.append(language)
+
+        if not languages:
+            return "JavaScript"
+
+        counter = Counter(languages)
+        most_common = counter.most_common()
+        top_count = most_common[0][1]
+
+        close_languages = [
+            lang
+            for lang, count in most_common
+            if count >= 0.5 * top_count and lang != "Unknown"
+        ]
+
+        return " and ".join(close_languages)
+
+    @staticmethod
+    def query_with_LLM(query: str, model: SentenceTransformer) -> np.ndarray:
         """
         Expands the query using Together AI, generates a code snippet, computes embeddings for both,
         and returns a weighted combination.
@@ -129,11 +164,12 @@ class QueryExpander:
         Args:
             query (str): Original user query.
             model (SentenceTransformer): Model used to embed text/code.
-            language (str): Programming language for code generation.
 
         Returns:
             np.ndarray: Combined embedding vector.
         """
+        language = QueryExpander.detect_language_from_files([Path(PROJECT_NAME)])
+
         expanded_query = QueryExpander.expand_query_with_together_api(query)
         generated_code = QueryExpander.generate_code_snippet_with_together_api(
             expanded_query, language
@@ -149,7 +185,9 @@ class QueryExpander:
 if __name__ == "__main__":
     # Example usage
     model = SentenceTransformer("all-MiniLM-L6-v2")
-    query = "How to use FAISS for similarity search?"
-    expanded_query = QueryExpander.query_with_together_api(query, model)
+    query = (
+        "What functionality does the component provide for mirroring a device's screen?"
+    )
+    expanded_query = QueryExpander.detect_language_from_files()
 
     print("Expanded Query:", expanded_query)

@@ -44,7 +44,6 @@ class FAISSRetriever:
         query: str,
         expand_query_type: str,
         query_top_k: int,
-        language: str = "JavaScript",
     ) -> np.ndarray:
         """
         Expands the query using the specified method.
@@ -53,14 +52,13 @@ class FAISSRetriever:
             query (str): Original query.
             expand_query_type (str): Type of query expansion technique.
             query_top_k (int): Number of similar terms to add.
-            language (str): Language of the codebase (default is "JavaScript").
 
         Returns:
             np.ndarray: Embedding of the expanded query.
         """
         if expand_query_type == "llm_generated":
             query_embedding = QueryExpander.query_with_LLM(
-                query=query, model=self.model, language=language
+                query=query, model=self.model
             )
         else:
             if expand_query_type == "wordnet":
@@ -82,7 +80,6 @@ class FAISSRetriever:
         rerank: bool = False,
         similarity_threshold: float = 0.5,
         query_top_k: int = 7,
-        language: str = "JavaScript",
     ) -> list[dict]:
         """
         Searches the FAISS index for code chunks based on either a similarity radius or top_k results.
@@ -110,7 +107,6 @@ class FAISSRetriever:
             query=query,
             expand_query_type=expand_query_type,
             query_top_k=query_top_k,
-            language=language,
         )
 
         results = []
