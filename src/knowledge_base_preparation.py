@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.config import EMBEDDINGS_DIR, MAX_CHUNK_SIZE, REPO_URL
+from src.config import EMBEDDING_MODEL, EMBEDDINGS_DIR, MAX_CHUNK_SIZE, REPO_URL
 from src.preprocessing.code_parser import CodeParser
 from src.preprocessing.embedding_generator import EmbeddingGenerator
 from src.preprocessing.repo_loader import RepoLoader
@@ -39,13 +39,13 @@ def prepare_knowledge_base(max_chunk_size: int, repo_path: str) -> None:
 
     project_name = repo_path.split("/")[-1]
 
-    embedding_generator = EmbeddingGenerator()
+    embedding_generator = EmbeddingGenerator(model_name=EMBEDDING_MODEL)
     code_chunks = embedding_generator.create_embeddings(code_chunks)
     embedding_generator.save_embeddings(
         code_chunks, save_path=Path(EMBEDDINGS_DIR) / project_name
     )
 
-    retriever = FAISSRetriever()
+    retriever = FAISSRetriever(EMBEDDING_MODEL)
     retriever.build_index(project_name)
 
 

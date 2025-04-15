@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 
 import wandb
-from src.config import EMBEDDING_MODEL
+from src.config import EMBEDDING_MODEL, PROJECT_NAME
 from src.evaluation.dataset import RAGDataset
 from src.evaluation.evaluator import RAGEvaluator
 from src.evaluation.utils import set_seeds
@@ -37,7 +37,7 @@ def main():
             reinit=True,
         )
         retriever = FAISSRetriever(EMBEDDING_MODEL)
-        retriever.load_index("escrcpy")
+        retriever.load_index(PROJECT_NAME)
 
         start_time = time.time()
         results = RAGEvaluator.evaluate(

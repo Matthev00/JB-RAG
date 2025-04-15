@@ -1,7 +1,7 @@
 import streamlit as st
 
 from src.app_utils.answer_summary import generate_summary
-from src.config import EMBEDDING_MODEL
+from src.config import EMBEDDING_MODEL, PROJECT_NAME
 from src.retriever.faiss_search import FAISSRetriever
 
 
@@ -11,7 +11,7 @@ def main():
     To run this script 'streamlit run src/main.py --server.fileWatcherType=none'
     """
     retriever = FAISSRetriever(embedding_model=EMBEDDING_MODEL)
-    retriever.load_index("escrcpy")
+    retriever.load_index(PROJECT_NAME)
 
     st.title("Code Search Application")
 

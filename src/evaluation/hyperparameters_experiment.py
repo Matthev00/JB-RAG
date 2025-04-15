@@ -3,7 +3,7 @@ from pathlib import Path
 import optuna
 
 import wandb
-from src.config import EMBEDDING_MODEL
+from src.config import EMBEDDING_MODEL, PROJECT_NAME
 from src.evaluation.dataset import RAGDataset
 from src.evaluation.evaluator import RAGEvaluator
 from src.evaluation.utils import set_seeds
@@ -42,8 +42,8 @@ def main():
 
         prepare_knowledge_base(max_chunk_size, "data/repos/escrcpy")
         retriever = FAISSRetriever(EMBEDDING_MODEL)
-        retriever.build_index("escrcpy")
-        retriever.load_index("escrcpy")
+        retriever.build_index(PROJECT_NAME)
+        retriever.load_index(PROJECT_NAME)
 
         retriever_params = {"radius": radius, "top_k": top_k}
         results = RAGEvaluator.evaluate(retriever, dataset, **retriever_params)
