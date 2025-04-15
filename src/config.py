@@ -49,7 +49,7 @@ LANGUAGE_PATTERNS = {
 }
 
 
-EMBEDDING_MODEL = "microsoft/graphcodebert-base"
+EMBEDDING_MODEL = "krlvi/sentence-t5-base-nlpl-code_search_net"
 SUMMARY_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 QUERY_EXPANDER_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 DEVICE = "cpu"

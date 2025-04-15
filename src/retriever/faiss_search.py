@@ -108,6 +108,7 @@ class FAISSRetriever:
             expand_query_type=expand_query_type,
             query_top_k=query_top_k,
         )
+        query_embedding = query_embedding / np.linalg.norm(query_embedding, axis=1, keepdims=True)
 
         results = []
         files = set()
@@ -187,6 +188,7 @@ class FAISSRetriever:
         )
 
         embeddings = np.load(embeddings_path)
+        embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
         self.metadata = json.loads(metadata_path.read_text())
 
         self.index = faiss.IndexFlatIP(embeddings.shape[1])

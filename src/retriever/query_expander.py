@@ -168,7 +168,7 @@ class QueryExpander:
         Returns:
             np.ndarray: Combined embedding vector.
         """
-        language = QueryExpander.detect_language_from_files([Path(PROJECT_NAME)])
+        language = QueryExpander.detect_language_from_files()
 
         expanded_query = QueryExpander.expand_query_with_together_api(query)
         generated_code = QueryExpander.generate_code_snippet_with_together_api(

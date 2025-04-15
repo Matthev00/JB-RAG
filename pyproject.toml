@@ -7,7 +7,7 @@ name = "jb-rag"
 version = "0.1.0"
 description = "Retrieval-Augmented Generation (RAG) system over a code repository for a question-answering task."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "faiss-cpu>=1.10.0",
     "gitpython>=3.1.44",
@@ -26,6 +26,7 @@ dependencies = [
     "openai>=1.69.0",
     "dotenv>=0.9.9",
     "together>=1.5.5",
+    "tree-sitter-languages",
 ]
 
 [flake8]

@@ -14,7 +14,7 @@ def main():
     retriever_params = {
         "radius": None,
         "top_k": 11,
-        # "expand_query_type": "llm_generated",
+        "expand_query_type": "llm_generated",
     }
     results = RAGEvaluator.evaluate(retriever, dataset, **retriever_params)
     pprint(results)
