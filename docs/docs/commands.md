@@ -8,16 +8,9 @@ make create_environment
 
 ## Install Python Dependencies
 
-*Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
-
-**Option B – Full setup with LLM**
-```sh
-make requirements-llm
-```
-By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
 
 #### ▶️ Using Azure OpenAI API
 

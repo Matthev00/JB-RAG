@@ -7,7 +7,7 @@ name = "jb-rag"
 version = "0.1.0"
 description = "Retrieval-Augmented Generation (RAG) system over a code repository for a question-answering task."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "faiss-cpu>=1.10.0",
     "gitpython>=3.1.44",
@@ -16,19 +16,17 @@ dependencies = [
     "nltk>=3.9.1",
     "numpy>=2.2.4",
     "optuna>=4.2.1",
-    "sentence-transformers>=3.4.1",
     "setuptools>=76.0.0",
     "streamlit>=1.44.0",
     "wandb>=0.19.8",
-]
-
-[project.optional-dependencies]
-llm = [
-    "transformers>=4.49.0",
-    "bitsandbytes>=0.45.4",
-    "accelerate>=1.5.2",
     "openai>=1.69.0",
     "dotenv>=0.9.9",
+    "together>=1.5.5",
+    "transformers>=4.51.3",
+    "sentence-transformers>=4.1.0",
+    "bitsandbytes>=0.45.5",
+    "accelerate>=1.6.0",
+    "tree-sitter==0.20.1",
 ]
 
 [flake8]

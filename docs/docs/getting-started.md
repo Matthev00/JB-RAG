@@ -8,14 +8,8 @@ Before starting with the project, make sure you have installed all the required 
 make create_environment
 ```
 
-**Option A – Basic setup (no LLM)**
 ```sh
 make requirements
-```
-
-**Option B – Full setup with LLM**
-```sh
-make requirements-llm
 ```
 By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
 

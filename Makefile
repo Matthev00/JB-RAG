@@ -16,8 +16,6 @@ PYTHON_INTERPRETER = python3
 requirements:
 	uv sync
 	uv run python -m nltk.downloader wordnet
-#	$(PYTHON_INTERPRETER) -m pip install -U pip
-#	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 
 ## Install Python Dependencies with LLM Dependencies
 requirements-llm:

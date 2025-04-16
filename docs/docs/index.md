@@ -44,6 +44,7 @@ The default local model is `TinyLlama`, allowing for CPU-friendly inference. How
 AZURE_OPENAI_KEY=your_api_key
 AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com/
 AZURE_OPENA
+```
 
 ## Commands
 

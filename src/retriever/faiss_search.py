@@ -39,6 +39,38 @@ class FAISSRetriever:
         with metadata_path.open("r", encoding="utf-8") as f:
             self.metadata = json.load(f)
 
+    def expand_query(
+        self,
+        query: str,
+        expand_query_type: str,
+        query_top_k: int,
+    ) -> np.ndarray:
+        """
+        Expands the query using the specified method.
+
+        Args:
+            query (str): Original query.
+            expand_query_type (str): Type of query expansion technique.
+            query_top_k (int): Number of similar terms to add.
+
+        Returns:
+            np.ndarray: Embedding of the expanded query.
+        """
+        if expand_query_type == "llm_generated":
+            query_embedding = QueryExpander.query_with_LLM(
+                query=query, model=self.model
+            )
+        else:
+            if expand_query_type == "wordnet":
+                query = QueryExpander.expand_query_with_wordnet(query=query)
+            elif expand_query_type == "candidate_terms":
+                query = QueryExpander.expand_query_with_embeddings(
+                    query=query, model=self.model, top_k=query_top_k
+                )
+
+            query_embedding = self.model.encode([query], convert_to_numpy=True)
+        return query_embedding
+
     def search(
         self,
         query: str,
@@ -56,25 +88,29 @@ class FAISSRetriever:
             query (str): Query string.
             radius (float, optional): Radius for similarity search .
             top_k (int, optional): Number of top results to retrieve.
-            expand_query_type (str, optional): Type of expand query technique(None, wordnet, candidate_terms)
+            expand_query_type (str, optional): Type of expand query technique(None, wordnet, candidate_terms, llm_generated)
             rerank (bool): Use reranker or not
             similarity_threshold (float): similarity threshold for reranker
             query_top_k (int): top k for query expansion
+            language (str): Language of the codebase (default is "JavaScript").
 
         Returns:
             list: List of similar code chunks with metadata.
+
+        Raises:
+            ValueError: If neither radius nor top_k is specified.
         """
         if radius is None and top_k is None:
             raise ValueError("Either 'radius' or 'top_k' must be specified.")
 
-        if expand_query_type == "wordnet":
-            query = QueryExpander.expand_query_with_wordnet(query=query)
-        elif expand_query_type == "candidate_terms":
-            query = QueryExpander.expand_query_with_embeddings(
-                query=query, model=self.model, top_k=query_top_k
-            )
-
-        query_embedding = self.model.encode([query], convert_to_numpy=True)
+        query_embedding = self.expand_query(
+            query=query,
+            expand_query_type=expand_query_type,
+            query_top_k=query_top_k,
+        )
+        query_embedding = query_embedding / np.linalg.norm(
+            query_embedding, axis=1, keepdims=True
+        )
 
         results = []
         files = set()
@@ -154,6 +190,7 @@ class FAISSRetriever:
         )
 
         embeddings = np.load(embeddings_path)
+        embeddings = embeddings / np.linalg.norm(embeddings, axis=1, keepdims=True)
         self.metadata = json.loads(metadata_path.read_text())
 
         self.index = faiss.IndexFlatIP(embeddings.shape[1])

@@ -4,6 +4,7 @@ FAISS_INDEX_DIR = "data/faiss"
 MAX_CHUNK_SIZE = 110
 
 REPO_URL = "https://github.com/viarotel-org/escrcpy.git"
+PROJECT_NAME = "escrcpy"
 
 DEFAULT_IGNORED_EXTENSIONS = {
     ".jpeg",
@@ -48,7 +49,8 @@ LANGUAGE_PATTERNS = {
 }
 
 
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "krlvi/sentence-t5-base-nlpl-code_search_net"
 SUMMARY_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+QUERY_EXPANDER_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 DEVICE = "cpu"
 USE_OPENAI = True
