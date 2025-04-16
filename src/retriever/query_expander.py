@@ -177,17 +177,8 @@ class QueryExpander:
 
         query_embed = model.encode([expanded_query], convert_to_numpy=True)
         code_embed = model.encode([generated_code], convert_to_numpy=True)
-
-        combined_embedding = 0.6 * query_embed + 0.4 * code_embed
+        query_proportion = 0.3
+        combined_embedding = (
+            query_proportion * query_embed + (1 - query_proportion) * code_embed
+        )
         return combined_embedding
-
-
-if __name__ == "__main__":
-    # Example usage
-    model = SentenceTransformer("all-MiniLM-L6-v2")
-    query = (
-        "What functionality does the component provide for mirroring a device's screen?"
-    )
-    expanded_query = QueryExpander.detect_language_from_files()
-
-    print("Expanded Query:", expanded_query)

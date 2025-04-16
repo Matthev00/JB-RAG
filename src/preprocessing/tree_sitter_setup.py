@@ -104,4 +104,3 @@ class TreeSitterManager:
         parser = Parser()
         parser.set_language(self.languages[language])
         return parser
-    
