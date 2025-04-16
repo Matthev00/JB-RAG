@@ -8,6 +8,7 @@ from src.config import (
     DOC_EXTENSIONS,
     LANGUAGE_PATTERNS,
 )
+from src.preprocessing.tree_sitter_splitter import TreeSitterSplitter
 
 
 class CodeParser:
@@ -23,6 +24,7 @@ class CodeParser:
         self.ignored_patterns = (
             self._load_gitignore_patterns() | DEFAULT_IGNORED_EXTENSIONS
         )
+        self.ts_splitter = TreeSitterSplitter()
 
     def _load_gitignore_patterns(self) -> set:
         """
@@ -145,7 +147,8 @@ class CodeParser:
         self, file_path: Path, max_chunk_size: int, file_language: str
     ) -> list[tuple[str, int, int]]:
         """
-        Splits file into chunks.
+        Splits file into chunks. Using Tree-sitter if supported, otherwise using regex patterns.
+        The chunks are created based on the maximum chunk size and the start and end lines of each chunk.
 
         Args:
             file_path (Path): Path to the code file.
@@ -155,6 +158,11 @@ class CodeParser:
         Returns:
             list[tuple[str, int, int]]: List of Tuples in each tuple code lines, start line and end line
         """
+        if self.ts_splitter.is_supported(file_language):
+            chunks = self.ts_splitter.split(file_path, file_language, max_chunk_size)
+            if chunks:
+                return chunks
+
         block_pattern = LANGUAGE_PATTERNS.get(file_language)
 
         with file_path.open("r", encoding="utf-8", errors="ignore") as f:
@@ -222,3 +230,12 @@ class CodeParser:
                 )
                 i += 1
         return all_chunks
+
+
+if __name__ == "__main__":
+    repo_path = Path("data/repos/escrcpy")
+    parser = CodeParser(repo_path)
+    chunks = parser.parse(max_chunk_size=100)
+    for chunk in chunks:
+        print(chunk)
+        break

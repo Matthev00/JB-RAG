@@ -8,7 +8,6 @@ make create_environment
 
 ## Install Python Dependencies
 
-*Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
