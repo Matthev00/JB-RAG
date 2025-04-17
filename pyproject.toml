@@ -28,6 +28,7 @@ dependencies = [
     "accelerate>=1.6.0",
     "tree-sitter==0.20.1",
     "datasets>=3.5.0",
+    "ipykernel>=6.29.5",
 ]
 
 [flake8]
