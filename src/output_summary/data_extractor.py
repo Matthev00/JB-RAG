@@ -1,14 +1,16 @@
-import pandas as pd
-import random
 import json
-from datasets import load_dataset
+import random
 from pathlib import Path
+
+import pandas as pd
+from datasets import load_dataset
+
 
 class DatasetExtractr:
     def __init__(self, dataset_name, split="vaidation"):
         """
         Initializes the DatasetExtractor with the dataset name and split.
-        
+
         Args:
             dataset_name (str): Name of the dataset to load.
             split (str): The split of the dataset to load (default is "train_small").
@@ -82,5 +84,7 @@ class DatasetExtractr:
 
 
 if __name__ == "__main__":
-    processor = DatasetExtractr(dataset_name="Fsoft-AIC/the-vault-function", split="train_small")
+    processor = DatasetExtractr(
+        dataset_name="Fsoft-AIC/the-vault-function", split="train_small"
+    )
     processor.pipline(Path("data/summary/processed/dataset.jsonl"))

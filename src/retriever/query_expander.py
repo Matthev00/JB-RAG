@@ -72,7 +72,6 @@ class QueryExpander:
         Returns:
             str: Expanded query.
         """
-        load_dotenv()
         client = Together()
         response = client.chat.completions.create(
             model=QUERY_EXPANDER_MODEL,
@@ -104,7 +103,6 @@ class QueryExpander:
         Returns:
             str: Generated code snippet.
         """
-        load_dotenv()
         client = Together()
         response = client.chat.completions.create(
             model=QUERY_EXPANDER_MODEL,

@@ -2,6 +2,7 @@
 /data/embeddings
 /data/faiss
 /data/repos
+/data/
 
 # Mac OS-specific storage files
 .DS_Store
