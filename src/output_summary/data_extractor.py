@@ -65,6 +65,8 @@ class DatasetExtractr:
         Args:
             output_path (Path): Path to the output file.
         """
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             for item in self.dataset:
                 f.write(json.dumps(item, ensure_ascii=False) + "\n")
