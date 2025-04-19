@@ -29,6 +29,7 @@ dependencies = [
     "tree-sitter==0.20.1",
     "datasets>=3.5.0",
     "ipykernel>=6.29.5",
+    "matplotlib>=3.10.1",
 ]
 
 [flake8]
