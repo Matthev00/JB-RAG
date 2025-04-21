@@ -82,6 +82,11 @@ docs_build:
 evaluate:
 	uv run src/evaluate.py
 
+## Generate summary dataset
+.PHONY: generate_summary_dataset
+generate_summary_dataset:
+	uv run src/output_summary/create_summary_dataset.py
+
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################
