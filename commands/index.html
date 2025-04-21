@@ -415,6 +415,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#create-llm-summaries-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create LLM summaries dataset
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -537,6 +546,28 @@
   
   <span class="md-ellipsis">
     Main Scripts
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/summary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    LLM Summaries
     
   </span>
   
@@ -703,6 +734,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#create-llm-summaries-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create LLM summaries dataset
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -724,13 +764,8 @@
 <pre><code class="language-sh">make create_environment
 </code></pre>
 <h2 id="install-python-dependencies">Install Python Dependencies</h2>
-<p><em>Option A – Basic setup (no LLM)</em>*</p>
 <pre><code class="language-sh">make requirements
 </code></pre>
-<p><strong>Option B – Full setup with LLM</strong></p>
-<pre><code class="language-sh">make requirements-llm
-</code></pre>
-<p>By default, the system uses the <strong>OpenAI API</strong> to generate natural language summaries of retrieved code files.</p>
 <h4 id="using-azure-openai-api">▶️ Using Azure OpenAI API</h4>
 <p>To enable Azure OpenAI-based summaries:</p>
 <ol>
@@ -784,6 +819,10 @@ For this you need an acount on <a href="https://wandb.ai/site/">Weights &amp; Bi
 <h2 id="build-documentation">Build documentation</h2>
 <p>Builds the documentation using mkdocs.</p>
 <pre><code class="language-sh">make docs_build
+</code></pre>
+<h2 id="create-llm-summaries-dataset">Create LLM summaries dataset</h2>
+<p>Generates synthetic dataset for summary model training.</p>
+<pre><code class="language-sh">make generate_summary_dataset
 </code></pre>
 
 
