@@ -165,10 +165,3 @@ class DatasetExtractor:
         self.load_dataset()
         self.preprocess()
         self.save_dataset(output_path)
-
-
-if __name__ == "__main__":
-    processor = DatasetExtractor(
-        dataset_name="Fsoft-AIC/the-vault-function", split="train_small"
-    )
-    processor.pipeline(Path("data/summary/processed/dataset.jsonl"))
