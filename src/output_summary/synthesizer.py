@@ -3,7 +3,6 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
-from dotenv import load_dotenv
 from together import Together
 from tqdm import tqdm, trange
 
@@ -19,14 +18,70 @@ class LLMProcessor:
         self.client = Together()
         self.model = model
 
-    def generate_summary(self, input_data: list[dict], output_data: list[str]) -> str:
+    def generate_rag_prompt(
+        self, input_data: list[dict], output_data: list[str]
+    ) -> str:
         """
-        Generates a summary for the provided code and description using Together API.
-        This method constructs a prompt using the code and metadata, and then
-        sends it to the Together API for processing. The API response is then
-        returned as the summary.
+        Generates a synthetic user prompt that would likely retrieve this group of code snippets
+        in a RAG system based on their content and descriptions.
 
         Args:
+            input_data (list[dict]): Input code snippets and metadata.
+            output_data (list[str]): Existing descriptions of the code snippets.
+
+        Returns:
+            str: A synthetic user prompt suitable for use with a RAG retriever.
+        """
+        system_prompt = (
+            "You are simulating a user interacting with a retrieval-based code assistant. "
+            "Given a group of code snippets and their descriptions, generate a realistic question "
+            "the user might ask that would cause the system to retrieve this specific group of snippets. "
+            "Do not refer to specific variables or filenames — just ask a question that matches their functionality."
+            "Return only the question user might ask, without any additional text."
+        )
+
+        user_prompt = "Here is a group of code snippets with descriptions:\n\n"
+
+        for i, (input_item, output_item) in enumerate(
+            zip(input_data, output_data), start=1
+        ):
+            user_prompt += (
+                f"Snippet {i}:\n"
+                f"{input_item['code']}\n\n"
+                f"Metadata:\n"
+                f"- Language: {input_item['language']}\n"
+                f"- Start line: {input_item['start_line']}\n"
+                f"- End line: {input_item['end_line']}\n"
+                f"Description: {output_item}\n"
+                f"{'-' * 40}\n"
+            )
+
+        user_prompt += "What is a realistic user question that would likely retrieve this group of code snippets?"
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
+            return response.choices[0].message.content.strip()
+
+        except Exception as e:
+            print(f"Error during prompt generation: {e}")
+            return "How it is done in the code?"
+
+    def generate_summary(
+        self, synthetic_prompt: str, input_data: list[dict], output_data: list[str]
+    ) -> str:
+        """
+        Generates a summary for the provided code and description using Together API.
+        This method constructs a prompt using the code, metadata, user prompt, and descriptions,
+        then sends it to the Together API for processing.
+
+        Args:
+            synthetic_prompt (str): The prompt to be used for generating the summary.
             input_data (list[dict]): Input data containing code and metadata.
             output_data (list[str]): Output data containing description of each code.
 
@@ -35,7 +90,7 @@ class LLMProcessor:
         """
         system_prompt = (
             "You are a highly skilled assistant specialized in generating concise, accurate, and professional summaries "
-            "for groups of code snippets. Your goal is to analyze the provided code, metadata, and existing descriptions, "
+            "for questions and groups of code snippets. Your goal is to analyze the provided code, metadata, and existing descriptions, "
             "and produce a summary that captures the purpose and functionality of the group in a clear and precise manner. "
             "If the code snippets are unrelated or serve different purposes, describe each snippet individually instead of "
             "trying to combine them into a single summary. Follow these guidelines:\n"
@@ -45,8 +100,13 @@ class LLMProcessor:
             "- Ensure the summary is no longer than 5-7 sentences.\n"
             "- If the code or descriptions are incomplete or unclear, make reasonable assumptions and note them in the summary."
         )
-        user_prompt = "Analyze the following group of code snippets, their metadata, and existing descriptions. Then generate concise and accurate summaries. If the snippets are unrelated, describe each snippet individually:\n\n"
-        for i, (input_item, output_item) in enumerate(zip(input_data, output_data), start=1):
+
+        user_prompt = f"User question: {synthetic_prompt}\n\n"
+        user_prompt += "Analyze the following group of code snippets, their metadata, and existing descriptions. Then generate concise and accurate summaries. If the snippets are unrelated, describe each snippet individually:\n\n"
+
+        for i, (input_item, output_item) in enumerate(
+            zip(input_data, output_data), start=1
+        ):
             user_prompt += (
                 f"Snippet {i}:\n"
                 f"{input_item['code']}\n\n"
@@ -58,7 +118,7 @@ class LLMProcessor:
                 f"Existing Description: {output_item}\n"
                 f"{'=' * 40}\n"
             )
-        user_prompt += "Summary: "
+        user_prompt += "Summary:"
 
         try:
             response = self.client.chat.completions.create(
@@ -111,10 +171,19 @@ def process_dataset(
                 input_data = [record["input"] for record in group]
                 output_data = [record["output"] for record in group]
 
-                new_output = llm_processor.generate_summary(input_data, output_data)
+                synthetic_prompt = llm_processor.generate_rag_prompt(
+                    input_data, output_data
+                )
+                new_output = llm_processor.generate_summary(
+                    synthetic_prompt, input_data, output_data
+                )
 
                 processed_dataset.append(
-                    {"input_group": input_data, "generated_summary": new_output}
+                    {
+                        "synthetic_prompt": synthetic_prompt,
+                        "input_group": input_data,
+                        "generated_summary": new_output,
+                    }
                 )
 
                 i += group_size
@@ -124,11 +193,3 @@ def process_dataset(
     with open(output_file, "w", encoding="utf-8") as f:
         for item in processed_dataset:
             f.write(json.dumps(item, ensure_ascii=False) + "\n")
-
-
-if __name__ == "__main__":
-    load_dotenv()
-    llm_processor = LLMProcessor(model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free")
-    input_file = Path("data/summary/processed/dataset.jsonl")
-    output_file = Path("data/summary/synthetic/dataset.jsonl")
-    process_dataset(input_file, output_file, llm_processor)
