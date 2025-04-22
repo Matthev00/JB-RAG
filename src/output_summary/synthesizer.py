@@ -135,6 +135,21 @@ class LLMProcessor:
             return "Error: Unable to generate summary."
 
 
+def rephrase_how_to_where(question: str) -> str:
+    """
+    Replaces 'How can I' at the beginning of a question with 'Where can I'.
+
+    Args:
+        question (str): The original question.
+
+    Returns:
+        str: Rephrased question.
+    """
+    if question.lower().startswith("how can i"):
+        return "Where can I" + question[9:]
+    return question
+
+
 def process_dataset(
     input_file: Path,
     output_file: Path,
@@ -174,6 +189,7 @@ def process_dataset(
                 synthetic_prompt = llm_processor.generate_rag_prompt(
                     input_data, output_data
                 )
+                synthetic_prompt = rephrase_how_to_where(synthetic_prompt)
                 new_output = llm_processor.generate_summary(
                     synthetic_prompt, input_data, output_data
                 )
