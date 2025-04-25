@@ -30,6 +30,7 @@ dependencies = [
     "datasets>=3.5.0",
     "ipykernel>=6.29.5",
     "matplotlib>=3.10.1",
+    "peft>=0.15.2",
 ]
 
 [flake8]
