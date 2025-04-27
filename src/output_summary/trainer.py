@@ -130,7 +130,7 @@ class QuantizedTrainer:
         return self.tokenizer(
             example["input"],
             truncation=True,
-            max_length=512,
+            max_length=2048,
             padding="max_length"
         )
 
@@ -178,6 +178,7 @@ class QuantizedTrainer:
         training_args = TrainingArguments(
             output_dir=str(self.output_dir),
             run_name=self.project_name,
+            optim="paged_adamw_8bit",
             **self.training_config
         )
         trainer = Trainer(
