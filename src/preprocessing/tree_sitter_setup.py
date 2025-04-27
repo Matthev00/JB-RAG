@@ -104,3 +104,9 @@ class TreeSitterManager:
         parser = Parser()
         parser.set_language(self.languages[language])
         return parser
+
+
+if __name__ == "__main__":
+    builder = TreeSitterBuilder()
+    builder.setup()
+    print("Tree-sitter setup complete.")

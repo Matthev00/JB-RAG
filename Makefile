@@ -82,6 +82,11 @@ docs_build:
 evaluate:
 	uv run src/evaluate.py
 
+## make prepare tree split
+.PHONY: prepare_tree_sitter
+prepare_tree_split:
+	uv run src/preprocessing/tree_sitter_setup.py
+
 #################################################################################
 # PROJECT RULES                                                                 #
 #################################################################################
