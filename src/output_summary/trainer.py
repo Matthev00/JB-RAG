@@ -143,9 +143,27 @@ class QuantizedTrainer:
             tuple[Dataset, Dataset]: The training and evaluation datasets.
         """
         dataset = self.load_dataset()
+
+        system_prompt = "<|system|>\nYou are a helpful AI specialized in summarizing code.\n"
+
+        def merge_inputs(example):
+            code_snippets = "\n".join(
+                snippet["code"] for snippet in example["input_group"]
+            )
+            user_prompt = f"<|user|>\n{example['synthetic_prompt']}\n\nRETRIEVED FRAGMENTS:\n{code_snippets}\n"
+            assistant_prompt = "<|assistant|>\n"
+
+            example["input"] = system_prompt + user_prompt + assistant_prompt
+            example["output"] = example["generated_summary"]
+            return example
+
+        dataset = dataset.map(merge_inputs)
+        dataset = dataset.remove_columns(["synthetic_prompt", "input_group", "generated_summary"])
+
         tokenized_dataset = dataset.map(self.tokenize_function, batched=True)
-        tokenized_dataset = tokenized_dataset.train_test_split(test_size=0.2)
-        return tokenized_dataset["train"], tokenized_dataset["test"]
+
+        split_dataset = tokenized_dataset.train_test_split(test_size=0.2)
+        return split_dataset["train"], split_dataset["test"]
 
     def train(self) -> None:
         """
