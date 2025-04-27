@@ -106,13 +106,16 @@ class QuantizedTrainer:
     def load_dataset(self) -> Dataset:
         """
         Load the dataset from the specified path.
-        This method assumes the dataset is in JSON format.
+        This method assumes the dataset is in JSONL format.
         
         Returns:
             Dataset: The loaded dataset.
         """
+        data = []
         with self.dataset_path.open("r", encoding="utf-8") as f:
-            data = json.load(f)
+            for line in f:
+                if line.strip():
+                    data.append(json.loads(line))
         dataset = Dataset.from_list(data)
         return dataset
 
