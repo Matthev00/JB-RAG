@@ -1,17 +1,20 @@
 import json
-import torch
 from pathlib import Path
+
+import torch
+from datasets import Dataset
+from peft import LoraConfig, TaskType, get_peft_model
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
-    TrainingArguments,
-    Trainer,
+    BitsAndBytesConfig,
     DataCollatorForLanguageModeling,
-    BitsAndBytesConfig
+    Trainer,
+    TrainingArguments,
 )
-from peft import get_peft_model, LoraConfig, TaskType
-from datasets import Dataset
+
 import wandb
+
 
 class QuantizedTrainer:
     """
@@ -19,8 +22,17 @@ class QuantizedTrainer:
     This class is designed to work with Hugging Face's Transformers library and
     the PEFT library for parameter-efficient fine-tuning.
     """
-    def __init__(self, model_name: str, quant_config_path: Path, lora_config_path: Path, training_config_path: Path,
-             dataset_path: Path, output_dir: Path, project_name: str = "summary_model") -> None:
+
+    def __init__(
+        self,
+        model_name: str,
+        quant_config_path: Path,
+        lora_config_path: Path,
+        training_config_path: Path,
+        dataset_path: Path,
+        output_dir: Path,
+        project_name: str = "summary_model",
+    ) -> None:
         """
         Initialize the QuantizedTrainer.
 
@@ -45,9 +57,12 @@ class QuantizedTrainer:
         wandb.init(project=self.project_name)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+
         self.model = self.load_model()
         self.model = self.apply_lora(self.model)
-    
+
     def _load_config(self, path: Path) -> dict:
         """
         Load the configuration file.
@@ -72,14 +87,16 @@ class QuantizedTrainer:
         """
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=self.quant_config.get("load_in_4bit", True),
-            bnb_4bit_use_double_quant=self.quant_config.get("bnb_4bit_use_double_quant", True),
+            bnb_4bit_use_double_quant=self.quant_config.get(
+                "bnb_4bit_use_double_quant", True
+            ),
             bnb_4bit_quant_type=self.quant_config.get("bnb_4bit_quant_type", "nf4"),
-            bnb_4bit_compute_dtype=getattr(torch, self.quant_config.get("bnb_4bit_compute_dtype", "float16")),
+            bnb_4bit_compute_dtype=getattr(
+                torch, self.quant_config.get("bnb_4bit_compute_dtype", "float16")
+            ),
         )
         model = AutoModelForCausalLM.from_pretrained(
-            self.model_name,
-            quantization_config=bnb_config,
-            device_map="auto"
+            self.model_name, quantization_config=bnb_config, device_map="auto"
         )
         return model
 
@@ -99,7 +116,7 @@ class QuantizedTrainer:
             target_modules=self.lora_config["target_modules"],
             lora_dropout=self.lora_config["lora_dropout"],
             bias=self.lora_config["bias"],
-            task_type=TaskType[self.lora_config["task_type"]]
+            task_type=TaskType[self.lora_config["task_type"]],
         )
         return get_peft_model(model, config)
 
@@ -107,7 +124,7 @@ class QuantizedTrainer:
         """
         Load the dataset from the specified path.
         This method assumes the dataset is in JSONL format.
-        
+
         Returns:
             Dataset: The loaded dataset.
         """
@@ -126,15 +143,12 @@ class QuantizedTrainer:
 
         Args:
             example (dict): The input text to tokenize.
-        
+
         Returns:
             dict: The tokenized input text.
         """
         return self.tokenizer(
-            example["input"],
-            truncation=True,
-            max_length=2048,
-            padding="max_length"
+            example["input"], truncation=True, max_length=2048, padding="max_length"
         )
 
     def prepare_data(self) -> tuple[Dataset, Dataset]:
@@ -147,7 +161,9 @@ class QuantizedTrainer:
         """
         dataset = self.load_dataset()
 
-        system_prompt = "<|system|>\nYou are a helpful AI specialized in summarizing code.\n"
+        system_prompt = (
+            "<|system|>\nYou are a helpful AI specialized in summarizing code.\n"
+        )
 
         def merge_inputs(example):
             code_snippets = "\n".join(
@@ -161,7 +177,9 @@ class QuantizedTrainer:
             return example
 
         dataset = dataset.map(merge_inputs)
-        dataset = dataset.remove_columns(["synthetic_prompt", "input_group", "generated_summary"])
+        dataset = dataset.remove_columns(
+            ["synthetic_prompt", "input_group", "generated_summary"]
+        )
 
         tokenized_dataset = dataset.map(self.tokenize_function, batched=True)
 
@@ -182,7 +200,7 @@ class QuantizedTrainer:
             output_dir=str(self.output_dir),
             run_name=self.project_name,
             optim="paged_adamw_8bit",
-            **self.training_config
+            **self.training_config,
         )
         trainer = Trainer(
             model=self.model,
@@ -190,7 +208,7 @@ class QuantizedTrainer:
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             tokenizer=self.tokenizer,
-            data_collator=data_collator
+            data_collator=data_collator,
         )
         trainer.train()
         self.model.save_pretrained(self.output_dir)
