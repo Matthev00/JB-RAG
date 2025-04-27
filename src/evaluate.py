@@ -13,12 +13,25 @@ def main():
     dataset = RAGDataset(Path("data/escrcpy_val.json"))
     retriever_params = {
         "radius": None,
-        "top_k": 11,
-        "expand_query_type": "llm_generated",
+        "top_k": 10,
+        "expand_query_type": "candidate_terms",
+        "rerank": False,
     }
-    results = RAGEvaluator.evaluate(retriever, dataset, **retriever_params)
-    pprint(results)
 
+    print("Evaluating WITHOUT reranker...")
+    results_no_rerank = RAGEvaluator.evaluate(retriever, dataset, **retriever_params)
+    pprint(results_no_rerank)
+
+    retriever_params_rerank = {
+        "radius": None,
+        "top_k": 20,
+        "expand_query_type": "candidate_terms",
+        "rerank": True,
+    }
+
+    print("\nEvaluating WITH reranker...")
+    results_rerank = RAGEvaluator.evaluate(retriever, dataset, **retriever_params_rerank)
+    pprint(results_rerank)
 
 if __name__ == "__main__":
     main()
