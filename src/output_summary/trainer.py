@@ -15,7 +15,6 @@ from transformers import (
 
 import wandb
 
-
 class QuantizedTrainer:
     """
     A class to handle the training of a quantized model with LoRA.
@@ -49,12 +48,15 @@ class QuantizedTrainer:
         self.quant_config = self._load_config(quant_config_path)
         self.lora_config = self._load_config(lora_config_path)
         self.training_config = self._load_config(training_config_path)
-        self.dataset_path = dataset_path
+        # self.dataset_path = dataset_path
         self.output_dir = output_dir
         self.project_name = project_name
 
         wandb.login()
         wandb.init(project=self.project_name)
+        wandb.config.update(self.quant_config)
+        wandb.config.update(self.lora_config)
+        wandb.config.update(self.training_config)
 
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         if self.tokenizer.pad_token is None:
@@ -199,6 +201,12 @@ class QuantizedTrainer:
         training_args = TrainingArguments(
             output_dir=str(self.output_dir),
             run_name=self.project_name,
+            report_to="wandb",
+            logging_steps=10,
+            evaluation_strategy="steps",
+            eval_steps=50,
+            save_steps=50,
+            save_total_limit=2,
             optim="paged_adamw_8bit",
             **self.training_config,
         )
@@ -214,3 +222,17 @@ class QuantizedTrainer:
         self.model.save_pretrained(self.output_dir)
         self.tokenizer.save_pretrained(self.output_dir)
         wandb.finish()
+
+
+
+if __name__ == "__main__":
+    trainer = QuantizedTrainer(
+        model_name="bigcode/starcoder2-3b",
+        quant_config_path=Path("src/output_summary/configs/quant_config.json"),
+        lora_config_path=Path("src/output_summary/configs/lora_config.json"),
+        training_config_path=Path("src/output_summary/configs/training_config.json"),
+        # dataset_path=Path("data/dataset.jsonl"),
+        output_dir=Path("output/quantized_model"),
+    )
+
+    trainer.train()
