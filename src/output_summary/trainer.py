@@ -201,12 +201,6 @@ class QuantizedTrainer:
         training_args = TrainingArguments(
             output_dir=str(self.output_dir),
             run_name=self.project_name,
-            report_to="wandb",
-            logging_steps=10,
-            evaluation_strategy="steps",
-            eval_steps=50,
-            save_steps=50,
-            save_total_limit=2,
             optim="paged_adamw_8bit",
             **self.training_config,
         )
