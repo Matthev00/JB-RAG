@@ -216,17 +216,3 @@ class QuantizedTrainer:
         self.model.save_pretrained(self.output_dir)
         self.tokenizer.save_pretrained(self.output_dir)
         wandb.finish()
-
-
-
-if __name__ == "__main__":
-    trainer = QuantizedTrainer(
-        model_name="bigcode/starcoder2-3b",
-        quant_config_path=Path("src/output_summary/configs/quant_config.json"),
-        lora_config_path=Path("src/output_summary/configs/lora_config.json"),
-        training_config_path=Path("src/output_summary/configs/training_config.json"),
-        # dataset_path=Path("data/dataset.jsonl"),
-        output_dir=Path("output/quantized_model"),
-    )
-
-    trainer.train()
