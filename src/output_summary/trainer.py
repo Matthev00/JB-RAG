@@ -48,7 +48,7 @@ class QuantizedTrainer:
         self.quant_config = self._load_config(quant_config_path)
         self.lora_config = self._load_config(lora_config_path)
         self.training_config = self._load_config(training_config_path)
-        # self.dataset_path = dataset_path
+        self.dataset_path = dataset_path
         self.output_dir = output_dir
         self.project_name = project_name
 
