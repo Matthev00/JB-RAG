@@ -54,5 +54,6 @@ EMBEDDING_MODEL = "krlvi/sentence-t5-base-nlpl-code_search_net"
 SUMMARY_MODEL = "bigcode/starcoder2-3b"
 SUMMARY_DATASET_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 QUERY_EXPANDER_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
+LORA_PATH = "models/checkpoint-68"
 DEVICE = "cpu"
-USE_OPENAI = True
+USE_OPENAI = False

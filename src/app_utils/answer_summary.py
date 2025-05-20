@@ -67,9 +67,10 @@ if USE_OPENAI:
 
 else:
     import torch
-    from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+    from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
+    from peft import PeftModel, PeftConfig
 
-    from src.config import DEVICE, SUMMARY_MODEL
+    from src.config import DEVICE, SUMMARY_MODEL, LORA_PATH
 
     def format_prompt(query: str, results: list[dict]) -> str:
         """
@@ -108,6 +109,37 @@ else:
             </s>
             <|assistant|>
             """
+    
+    def load_model_with_optional_lora(
+        lora_path: str | None = None,
+    ):
+        if DEVICE == "cuda":
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.float16
+            )
+
+            model = AutoModelForCausalLM.from_pretrained(
+                SUMMARY_MODEL,
+                quantization_config=bnb_config,
+                device_map=DEVICE,
+            )
+        else:
+            model = AutoModelForCausalLM.from_pretrained(
+                SUMMARY_MODEL,
+                device_map=DEVICE,
+                torch_dtype=torch.float32,
+            )
+
+        if lora_path:
+            model = PeftModel.from_pretrained(model, lora_path)
+            print(f"Loaded LoRA adapter from {lora_path}")
+        model.eval()
+
+        tokenizer = AutoTokenizer.from_pretrained(SUMMARY_MODEL)
+        return model, tokenizer
 
     def load_model():
         """
@@ -123,6 +155,19 @@ else:
         )
         tokenizer = AutoTokenizer.from_pretrained(SUMMARY_MODEL)
         return pipeline("text-generation", model=model, tokenizer=tokenizer)
+    
+    def generate_response(prompt: str, model, tokenizer, max_new_tokens: int = 150) -> str:
+        inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512).to(model.device)
+
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=150,
+            do_sample=True,
+            temperature=0.5,
+            pad_token_id=tokenizer.eos_token_id
+        )
+
+        return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
     def generate_summary(query: str, results: list[dict]) -> str:
         """
@@ -136,10 +181,11 @@ else:
             str: Generated explanation text.
         """
         prompt = format_prompt(query, results)
-        model = load_model()
+        model, tokenizer = load_model_with_optional_lora(LORA_PATH)
 
-        response = model(
-            prompt, max_new_tokens=150, do_sample=True, temperature=0.5, truncation=True
-        )[0]["generated_text"]
+        # response = model(
+        #     prompt, max_new_tokens=150, do_sample=True, temperature=0.5, truncation=True
+        # )[0]["generated_text"]
+        response = generate_response(prompt, model, tokenizer)
 
         return response[len(prompt) :].strip()
