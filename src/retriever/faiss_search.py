@@ -13,7 +13,10 @@ from src.retriever.query_expander import QueryExpander
 
 
 class FAISSRetriever:
-    def __init__(self, embedding_model: str = "all-MiniLM-L6-v2") -> None:
+    def __init__(self, 
+                 embedding_model: str = "all-MiniLM-L6-v2",
+                 reranker_model: str = "BAAI/bge-reranker-v2-m3"
+        ) -> None:
         """
         Initializes the SentenceTransformer model and the FAISS index.
 
@@ -24,8 +27,8 @@ class FAISSRetriever:
         self.index: faiss = None
         self.metadata: list[dict] = []
 
-        self.reranker_tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-reranker-v2-m3")
-        self.reranker_model = AutoModelForSequenceClassification.from_pretrained("BAAI/bge-reranker-v2-m3")
+        self.reranker_tokenizer = AutoTokenizer.from_pretrained(reranker_model)
+        self.reranker_model = AutoModelForSequenceClassification.from_pretrained(reranker_model)
         self.reranker_model.eval()
 
     def load_index(self, project_name: str) -> None:
@@ -157,7 +160,7 @@ class FAISSRetriever:
         top_k: int = 10,
     ) -> list[dict]:
         """
-        Rerank documents using a cross-encoder model (BAAI/bge-reranker-v2-m3).
+        Rerank documents using a cross-encoder model.
 
         Args:
             query (str): User query.
