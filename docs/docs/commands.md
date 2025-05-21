@@ -89,3 +89,9 @@ Builds the documentation using mkdocs.
 make docs_build
 ```
 
+## Create LLM summaries dataset
+Generates synthetic dataset for summary model training.
+```sh
+make generate_summary_dataset
+```
+

@@ -86,6 +86,10 @@ evaluate:
 .PHONY: prepare_tree_sitter
 prepare_tree_split:
 	uv run src/preprocessing/tree_sitter_setup.py
+## Generate summary dataset
+.PHONY: generate_summary_dataset
+generate_summary_dataset:
+	uv run src/output_summary/create_summary_dataset.py
 
 #################################################################################
 # PROJECT RULES                                                                 #
