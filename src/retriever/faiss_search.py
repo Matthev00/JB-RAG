@@ -3,15 +3,20 @@ from pathlib import Path
 
 import faiss
 import numpy as np
+import torch
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from src.config import EMBEDDINGS_DIR, FAISS_INDEX_DIR
 from src.retriever.query_expander import QueryExpander
 
 
 class FAISSRetriever:
-    def __init__(self, embedding_model: str = "all-MiniLM-L6-v2") -> None:
+    def __init__(self, 
+                 embedding_model: str = "all-MiniLM-L6-v2",
+                 reranker_model: str = "BAAI/bge-reranker-v2-m3"
+        ) -> None:
         """
         Initializes the SentenceTransformer model and the FAISS index.
 
@@ -21,6 +26,10 @@ class FAISSRetriever:
         self.model = SentenceTransformer(embedding_model)
         self.index: faiss = None
         self.metadata: list[dict] = []
+
+        self.reranker_tokenizer = AutoTokenizer.from_pretrained(reranker_model)
+        self.reranker_model = AutoModelForSequenceClassification.from_pretrained(reranker_model)
+        self.reranker_model.eval()
 
     def load_index(self, project_name: str) -> None:
         """
@@ -138,7 +147,7 @@ class FAISSRetriever:
                     files.add(self.metadata[idx]["relative_path"])
 
         if rerank:
-            self.rerank(query_embedding, results, similarity_threshold)
+            results = self.rerank(query, results, 10)
         else:
             results.sort(key=lambda x: x[1])
 
@@ -146,35 +155,36 @@ class FAISSRetriever:
 
     def rerank(
         self,
-        query_embedding: np.ndarray,
+        query: str,
         results: list[dict],
-        similarity_threshold: float,
+        top_k: int = 10,
     ) -> list[dict]:
         """
-        Reranks the search results based on the cosine similarity between the query embedding and the code chunks.
+        Rerank documents using a cross-encoder model.
 
         Args:
-            query_embedding (np.ndarray): Precomputed embedding of the query.
-            results (list): List of search results with metadata.
-            similarity_threshold (float): Minimum cosine similarity score to include a result.
+            query (str): User query.
+            results (list[dict]): Retrieved documents.
+            top_k (int): Number of top reranked documents to return.
 
         Returns:
-            list: List of reranked search results with metadata.
+            list[dict]: Top reranked documents.
         """
+        if not results:
+            return []
+
         code_chunks = [res[0]["code"] for res in results]
-        code_embeddings = self.model.encode(code_chunks, convert_to_numpy=True)
+        pairs = [(query, code) for code in code_chunks]
 
-        scores = cosine_similarity(query_embedding, code_embeddings)[0]
+        inputs = self.reranker_tokenizer(pairs, padding=True, truncation=True, return_tensors="pt", max_length=512)
 
-        filtered_results = [
-            (res, score)
-            for res, score in zip(results, scores)
-            if score >= similarity_threshold
-        ]
-        filtered_results = sorted(filtered_results, key=lambda x: x[1], reverse=True)
+        with torch.inference_mode():
+            scores = self.reranker_model(**inputs).logits.view(-1)
 
-        return filtered_results
+        reranked = sorted(zip(results, scores), key=lambda x: x[1], reverse=True)
 
+        return [res[0] for res in reranked[:top_k]]
+    
     def build_index(self, project_name: str) -> None:
         """
         Builds the FAISS index for the project.
