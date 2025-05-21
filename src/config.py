@@ -1,6 +1,7 @@
 REPO_DIR = "data/repos"
 EMBEDDINGS_DIR = "data/embeddings"
 FAISS_INDEX_DIR = "data/faiss"
+SUMMARY_DIR = "data/summary"
 MAX_CHUNK_SIZE = 110
 
 REPO_URL = "https://github.com/viarotel-org/escrcpy.git"
@@ -50,7 +51,9 @@ LANGUAGE_PATTERNS = {
 
 
 EMBEDDING_MODEL = "krlvi/sentence-t5-base-nlpl-code_search_net"
-SUMMARY_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+SUMMARY_MODEL = "bigcode/starcoder2-3b"
+SUMMARY_DATASET_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 QUERY_EXPANDER_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
+LORA_PATH = "models/checkpoint-68"
 DEVICE = "cpu"
-USE_OPENAI = True
+USE_OPENAI = False
