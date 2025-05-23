@@ -1,7 +1,7 @@
 import streamlit as st
 
 from src.app_utils.answer_summary import generate_summary
-from src.config import EMBEDDING_MODEL, PROJECT_NAME
+from src.config import EMBEDDING_MODEL, PROJECT_NAME, RERANKER_MODEL
 from src.retriever.faiss_search import FAISSRetriever
 
 
@@ -10,7 +10,7 @@ def main():
     Streamlit application for code search with optional LLM summarization.
     To run this script 'streamlit run src/main.py --server.fileWatcherType=none'
     """
-    retriever = FAISSRetriever(embedding_model=EMBEDDING_MODEL)
+    retriever = FAISSRetriever(embedding_model=EMBEDDING_MODEL, reranker_model=RERANKER_MODEL)
     retriever.load_index(PROJECT_NAME)
 
     st.title("Code Search Application")
@@ -65,7 +65,7 @@ def main():
                 elif expand_query_type == "Candidate Terms":
                     expand_query = "candidate_terms"
                 results = retriever.search(
-                    query, radius=radius, expand_query_type=expand_query
+                    query, radius=radius, expand_query_type=expand_query, rerank=True
                 )
             elif search_type == "Top K search":
                 expand_query = None
@@ -75,7 +75,7 @@ def main():
                     expand_query = "candidate_terms"
 
                 results = retriever.search(
-                    query, top_k=top_k, expand_query_type=expand_query
+                    query, top_k=top_k, expand_query_type=expand_query, rerank=True
                 )
 
             if results:

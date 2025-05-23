@@ -55,5 +55,6 @@ SUMMARY_MODEL = "bigcode/starcoder2-3b"
 SUMMARY_DATASET_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 QUERY_EXPANDER_MODEL = "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"
 LORA_PATH = "models/checkpoint-68"
+RERANKER_MODEL = "BAAI/bge-reranker-v2-m3"
 DEVICE = "cpu"
 USE_OPENAI = False
