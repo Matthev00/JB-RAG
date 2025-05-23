@@ -111,6 +111,8 @@ class FAISSRetriever:
         """
         if radius is None and top_k is None:
             raise ValueError("Either 'radius' or 'top_k' must be specified.")
+        query_top_k = top_k
+        top_k = min(20, 2* top_k)
 
         query_embedding = self.expand_query(
             query=query,
