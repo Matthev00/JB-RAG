@@ -5,13 +5,13 @@
     "num_train_epochs": 1,
     "learning_rate": 2e-4,
     "fp16": true,
-    "logging_steps": 100,
+    "logging_steps": 4,
     "evaluation_strategy": "steps",
-    "eval_steps": 500,
-    "save_steps": 500,
+    "eval_steps": 17,
+    "save_steps": 34,
     "save_total_limit": 2,
     "load_best_model_at_end": true,
     "gradient_checkpointing": true,
     "report_to": "wandb"
-  }
+}
   
