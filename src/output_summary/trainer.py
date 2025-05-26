@@ -163,28 +163,25 @@ class QuantizedTrainer:
         """
         dataset = self.load_dataset()
 
-        system_prompt = (
-            "<|system|>\nYou are a helpful AI specialized in summarizing code.\n"
-        )
-
         def merge_inputs(example):
-            code_snippets = "\n".join(
-                snippet["code"] for snippet in example["input_group"]
-            )
-            user_prompt = f"<|user|>\n{example['synthetic_prompt']}\n\nRETRIEVED FRAGMENTS:\n{code_snippets}\n"
-            assistant_prompt = "<|assistant|>\n"
+            instruction = f"### Instruction:\n{example['synthetic_prompt'].strip()}\n\n"
+            code_fragments = ""
+            for snippet in example["input_group"]:
+                rel_path = snippet.get("relative_path", "unknown.c")
+                code = snippet["code"]
+                code_fragments += f"--- File: {rel_path} ---\n{code.strip()}\n\n"
 
-            example["input"] = system_prompt + user_prompt + assistant_prompt
+            retrieved = f"RETRIEVED FRAGMENTS:\n{code_fragments.strip()}\n\n"
+            example["input"] = instruction + retrieved + "### Response:\n"
             example["output"] = example["generated_summary"]
             return example
 
         dataset = dataset.map(merge_inputs)
-        dataset = dataset.remove_columns(
-            ["synthetic_prompt", "input_group", "generated_summary"]
-        )
+        dataset = dataset.remove_columns([
+            "synthetic_prompt", "input_group", "generated_summary"
+        ])
 
         tokenized_dataset = dataset.map(self.tokenize_function, batched=True)
-
         split_dataset = tokenized_dataset.train_test_split(test_size=0.2)
         return split_dataset["train"], split_dataset["test"]
 

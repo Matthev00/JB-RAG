@@ -6,7 +6,7 @@
     "learning_rate": 2e-4,
     "fp16": true,
     "logging_steps": 4,
-    "evaluation_strategy": "steps",
+    "eval_strategy": "steps",
     "eval_steps": 17,
     "save_steps": 34,
     "save_total_limit": 2,
