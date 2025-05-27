@@ -149,9 +149,33 @@ class QuantizedTrainer:
         Returns:
             dict: The tokenized input text.
         """
-        return self.tokenizer(
-            example["input"], truncation=True, max_length=2048, padding="max_length"
+        prompt = example["input"]
+        output = example["output"]
+
+        prompt_ids = self.tokenizer(
+            prompt, truncation=True, max_length=2048, padding=False
+        )["input_ids"]
+
+        full_text = prompt + output
+        full_tokenized = self.tokenizer(
+            full_text,
+            truncation=True,
+            max_length=2048,
+            padding="max_length",
         )
+
+        input_len = len(prompt_ids)
+        total_len = len(full_tokenized["input_ids"])
+
+        # labels: -100 for prompt tokens, normal tokens for output
+        labels = [-100] * input_len + full_tokenized["input_ids"][input_len:]
+        labels = labels[:total_len] + [-100] * (2048 - total_len)  # pad if needed
+
+        return {
+            "input_ids": full_tokenized["input_ids"],
+            "attention_mask": full_tokenized["attention_mask"],
+            "labels": labels,
+        }
 
     def prepare_data(self) -> tuple[Dataset, Dataset]:
         """
@@ -171,17 +195,14 @@ class QuantizedTrainer:
                 code = snippet["code"]
                 code_fragments += f"--- File: {rel_path} ---\n{code.strip()}\n\n"
 
-            retrieved = f"RETRIEVED FRAGMENTS:\n{code_fragments.strip()}\n\n"
-            example["input"] = instruction + retrieved + "### Response:\n"
+            input_block = f"### Input:\n{code_fragments.strip()}\n\n"
+            example["input"] = instruction + input_block + "### Response:\n"
             example["output"] = example["generated_summary"]
             return example
 
         dataset = dataset.map(merge_inputs)
-        dataset = dataset.remove_columns([
-            "synthetic_prompt", "input_group", "generated_summary"
-        ])
-
-        tokenized_dataset = dataset.map(self.tokenize_function, batched=True)
+        tokenized_dataset = dataset.map(self.tokenize_function, remove_columns=dataset.column_names)
+        dataset.set_format(type="torch")
         split_dataset = tokenized_dataset.train_test_split(test_size=0.2)
         return split_dataset["train"], split_dataset["test"]
 
@@ -207,9 +228,29 @@ class QuantizedTrainer:
             train_dataset=train_dataset,
             eval_dataset=eval_dataset,
             tokenizer=self.tokenizer,
-            data_collator=data_collator,
+            data_collator=None,
         )
         trainer.train()
         self.model.save_pretrained(self.output_dir)
         self.tokenizer.save_pretrained(self.output_dir)
         wandb.finish()
+
+
+
+if __name__ == "__main__":
+    trainer = QuantizedTrainer(
+    model_name="TechxGenus/starcoder2-3b-instruct",
+    quant_config_path=Path("src/output_summary/configs/quant_config.json"),
+    lora_config_path=Path("src/output_summary/configs/lora_config.json"),
+    training_config_path=Path("src/output_summary/configs/training_config.json"),
+    dataset_path=Path("data/dataset.jsonl"),
+    output_dir=Path("models"),
+    project_name="starcoder-finetune"
+    )
+    train_dataset, eval_dataset = trainer.prepare_data()
+    print(f"Train dataset size: {len(train_dataset)}")
+    print(f"Eval dataset size: {len(eval_dataset)}")
+    print("Train example:", train_dataset[0])
+    decoded_prompt = trainer.tokenizer.decode(train_dataset[0]["input_ids"], skip_special_tokens=True)
+    print("\nPrompt + Output (decoded):\n")
+    print(decoded_prompt)
