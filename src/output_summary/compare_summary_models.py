@@ -55,34 +55,30 @@ def load_lora_model(base_name: str, lora_path: str):
     tokenizer = AutoTokenizer.from_pretrained(base_model_name)
     model = AutoModelForCausalLM.from_pretrained(
         base_model_name,
-        device_map="auto",  # lub .to("cuda") jeśli masz GPU i model się zmieści
+        device_map="auto",
         torch_dtype=torch.float16,
     )
     model = PeftModel.from_pretrained(model, lora_path)
     return model, tokenizer
 
-# === CONFIG ===
-jsonl_path = Path("/content/drive/MyDrive/JB-RAG/data/dataset.jsonl")  # <-- uzupełnij
-base_model_name = "TechxGenus/starcoder2-3b-instruct"  # <-- uzupełnij
-lora_model_path = Path("/content/drive/MyDrive/JB-RAG/models/instruct/checkpoint-102/")  # <-- uzupełnij
+jsonl_path = Path("/content/drive/MyDrive/JB-RAG/data/dataset.jsonl")
+base_model_name = "TechxGenus/starcoder2-3b-instruct"
+lora_model_path = Path("/content/drive/MyDrive/JB-RAG/models/instruct/checkpoint-102/")
 
-# === LOAD MODELS ===
-# base_model, base_tokenizer = load_base_model(base_model_name)
+base_model, base_tokenizer = load_base_model(base_model_name)
 lora_model, lora_tokenizer = load_lora_model(base_model_name, lora_model_path)
 
-# === LOAD DATA ===
 entries = load_dataset(jsonl_path, limit=3)
 
-# === COMPARE OUTPUTS ===
 for i, entry in enumerate(tqdm(entries)):
     prompt = build_prompt(entry["synthetic_prompt"], entry["input_group"])
 
-    # base_output = generate(base_model, base_tokenizer, prompt, 1024)
+    base_output = generate(base_model, base_tokenizer, prompt, 1024)
     lora_output = generate(lora_model, lora_tokenizer, prompt, 1024)
     ground_truth = entry["generated_summary"]
 
     print(f"\n========== Example {i+1} ==========")
     print(">> PROMPT:\n", entry["synthetic_prompt"])
-    # print(">> BASE OUTPUT:\n", base_output.strip())
+    print(">> BASE OUTPUT:\n", base_output.strip())
     print(">> LORA OUTPUT:\n", lora_output.strip())
     print(">> GROUND TRUTH:\n", ground_truth.strip())
