@@ -87,7 +87,6 @@ class FAISSRetriever:
         top_k: int = None,
         expand_query_type: str = None,
         rerank: bool = False,
-        similarity_threshold: float = 0.5,
         query_top_k: int = 7,
     ) -> list[dict]:
         """
@@ -99,7 +98,6 @@ class FAISSRetriever:
             top_k (int, optional): Number of top results to retrieve.
             expand_query_type (str, optional): Type of expand query technique(None, wordnet, candidate_terms, llm_generated)
             rerank (bool): Use reranker or not
-            similarity_threshold (float): similarity threshold for reranker
             query_top_k (int): top k for query expansion
             language (str): Language of the codebase (default is "JavaScript").
 
@@ -111,8 +109,9 @@ class FAISSRetriever:
         """
         if radius is None and top_k is None:
             raise ValueError("Either 'radius' or 'top_k' must be specified.")
-        query_top_k = top_k
-        top_k = min(20, 2* top_k)
+        if top_k is not None:
+            query_top_k = top_k
+            top_k = min(20, 2* top_k) if top_k is not None else None
 
         query_embedding = self.expand_query(
             query=query,
