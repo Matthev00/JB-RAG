@@ -8,16 +8,9 @@ make create_environment
 
 ## Install Python Dependencies
 
-*Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
-
-**Option B – Full setup with LLM**
-```sh
-make requirements-llm
-```
-By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
 
 #### ▶️ Using Azure OpenAI API
 
@@ -94,5 +87,11 @@ make docs_serve
 Builds the documentation using mkdocs.
 ```sh
 make docs_build
+```
+
+## Create LLM summaries dataset
+Generates synthetic dataset for summary model training.
+```sh
+make generate_summary_dataset
 ```
 

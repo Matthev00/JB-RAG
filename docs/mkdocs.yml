@@ -23,6 +23,7 @@ nav:
       - Data preprocessing: api/preprocessing.md
       - Retriver: api/retriver.md
       - Main Scripts: api/scripts.md
+      - LLM Summaries: api/summary.md
 
 site_author: Mateusz Ostaszewski
 # 

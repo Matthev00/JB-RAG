@@ -4,8 +4,6 @@ from pathlib import Path
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from src.preprocessing.code_parser import CodeParser
-
 
 class EmbeddingGenerator:
     """Creates embeddings for code chunks using SentenceTransformer"""

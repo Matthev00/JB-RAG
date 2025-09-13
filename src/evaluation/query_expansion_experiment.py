@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 
 import wandb
-from src.config import EMBEDDING_MODEL
+from src.config import EMBEDDING_MODEL, PROJECT_NAME
 from src.evaluation.dataset import RAGDataset
 from src.evaluation.evaluator import RAGEvaluator
 from src.evaluation.utils import set_seeds
@@ -37,7 +37,7 @@ def main():
             reinit=True,
         )
         retriever = FAISSRetriever(EMBEDDING_MODEL)
-        retriever.load_index("escrcpy")
+        retriever.load_index(PROJECT_NAME)
 
         start_time = time.time()
         results = RAGEvaluator.evaluate(
@@ -63,11 +63,20 @@ def main():
 
         return results
 
-    query_expansion_types = [None, "candidate_terms", "wordnet"]
-    retriever_configs = [{"top_k": 11, "query_top_k": i} for i in range(20)]
+    query_expansion_types = [None, "candidate_terms", "wordnet", "llm_generated"]
+
+    retriever_configs = [
+        {"top_k": 11},
+        {"radius": 0.26},
+    ]
+    candidate_terms_params = {"query_top_k": 7}
+
     trial_number = 1
     for expand_query_type in query_expansion_types:
         for retriever_params in retriever_configs:
+            if expand_query_type == "candidate_terms":
+                retriever_params.update(candidate_terms_params)
+
             evaluate_query_expansion(expand_query_type, retriever_params, trial_number)
             trial_number += 1
 

@@ -1,0 +1,17 @@
+{
+    "per_device_train_batch_size": 1,
+    "per_device_eval_batch_size": 1,
+    "gradient_accumulation_steps": 16,
+    "num_train_epochs": 1,
+    "learning_rate": 2e-4,
+    "fp16": true,
+    "logging_steps": 4,
+    "eval_strategy": "steps",
+    "eval_steps": 17,
+    "save_steps": 34,
+    "save_total_limit": 2,
+    "load_best_model_at_end": true,
+    "gradient_checkpointing": true,
+    "report_to": "wandb"
+}
+  

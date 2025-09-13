@@ -72,19 +72,8 @@ The system implements Query Expansion to enhance the quality of search results b
 2. **WordNet-based Expansion**:
    - This approach uses the WordNet lexical database to find synonyms and related terms for words in the query.
 
-**Results - latency/quality trade-offs**  
-The addition of Query Expansion based on static candidate terms resulted in a very slight improvement in recall, increasing it from **0.50343** to **0.50833**. However, this improvement came at a significant cost in terms of latency, which increased by approximately **3 times**.
-
-**Conclusions**
-
-1. **When to Use Query Expansion**:
-   - Query Expansion based on static candidate terms may be beneficial in scenarios where **recall is critical**, and even a small improvement in recall can justify the additional latency
-
-2. **When to Avoid Query Expansion**:
-   - If **latency is a critical factor**, such as in real-time systems.
-
-3. **Trade-offs**:
-   - The decision to use Query Expansion should be based on the specific requirements of the application. For systems prioritizing **quality over speed**, Query Expansion can be a valuable addition. However, for systems where **speed is paramount**, it is better to avoid it.
+3. **LLM-Based**:
+   - Generated more technical improved prompt using LLM throught togheter API. based on generated prompt generates code snipped taht could be simillar to prompt. Uses whole as input to FAISS search.
 
 
 #### Adding Reranker
@@ -113,17 +102,9 @@ Before starting with the project, make sure you have installed all the required 
 ```sh
 make create_environment
 ```
-
-**Option A – Basic setup (no LLM)**
 ```sh
 make requirements
 ```
-
-**Option B – Full setup with LLM**
-```sh
-make requirements-llm
-```
-By default, the system uses the **OpenAI API** to generate natural language summaries of retrieved code files.
 
 #### ▶️ Using Azure OpenAI API
 
@@ -236,6 +217,8 @@ You can reproduce experiments by preparing validation dataset by downloading fil
 │
 ├── preprocessing/          <- Data parsing and embedding
 │   ├── code_parser.py
+│   ├── tree_sitter_splitter.py
+│   ├── tree_sitter_setup.py
 │   ├── embedding_generator.py
 │   └── repo_loader.py
 │
